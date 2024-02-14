@@ -4,11 +4,6 @@ import {
   Flex,
   Icon,
   Text,
-  Stack,
-  Image,
-  Button,
-  Heading,
-  BoxProps,
   Drawer,
   DrawerContent,
   IconButton,
@@ -24,15 +19,16 @@ import { AiOutlineTeam, AiOutlineHome } from "react-icons/ai";
 import { BsFolder2, BsCalendarCheck, BsFolder2Open } from "react-icons/bs";
 import { FiMenu } from "react-icons/fi";
 import { RiFlashlightFill } from "react-icons/ri";
+import { NavLink } from "react-router-dom";
 
-export default function HeaderSidebar() {
+export default function HeaderSideBar() {
   const { isOpen, onClose, onOpen } = useDisclosure();
 
   return (
     <Box
       as="section"
-    //   bg={useColorModeValue("gray.50", "gray.700")}
-    //   minH="100vh"
+      //   bg={useColorModeValue("gray.50", "gray.700")}
+      //   minH="100vh"
     >
       <SidebarContent display={{ base: "none", md: "unset" }} />
       <Drawer w isOpen={isOpen} onClose={onClose} placement="left">
@@ -122,12 +118,24 @@ const SidebarContent = ({ ...props }) => (
         Doctors
       </NavItem>
       <NavItem icon={BsFolder2}>Patients</NavItem>
-      <NavItem icon={BsFolder2}>Departments</NavItem>
-      <NavItem icon={BsFolder2}>Doctor Type</NavItem>
+      
+      <NavLink to="/">
+        <NavItem icon={BsFolder2}>Appointments</NavItem>
+      </NavLink>
+
+      <NavLink to="/department">
+        <NavItem icon={BsFolder2}>+Departments</NavItem>
+      </NavLink>
+
+      <NavLink to="/doctorType">
+        <NavItem icon={BsFolder2}>+Doctor Type</NavItem>
+      </NavLink>
       <NavItem icon={BsFolder2}>Appointments</NavItem>
-      <NavItem>
-        <FaRegRegistered /> Register Page{" "}
-      </NavItem>
+      <NavLink to="/register">
+        <NavItem>
+          <FaRegRegistered /> Register Page
+        </NavItem>
+      </NavLink>
       {/* <NavItem icon={BsCalendarCheck}>Calendar</NavItem> */}
     </Flex>
   </Box>

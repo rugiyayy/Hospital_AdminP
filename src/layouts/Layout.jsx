@@ -1,11 +1,12 @@
-import React from 'react'
-import HeaderSidebar from './Header'
-import { Outlet } from 'react-router-dom'
+import React from "react";
+import { Outlet } from "react-router-dom";
+import HeaderSideBar from "./HeaderSideBar";
 
 export default function Layout() {
   return (
-   <>
-   <HeaderSidebar/>
-   <Outlet/></>
-  )
+    <>
+      <HeaderSideBar />
+      <Outlet />
+    </>
+  );
 }

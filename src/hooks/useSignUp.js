@@ -1,9 +1,7 @@
-import { useDisclosure, useToast } from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/react";
 import { useFormik } from "formik";
-import React, { useState } from "react";
-import { useQuery } from "react-query";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { loginAction } from "../redux/slices/accountSlice";
 import { httpClient } from "../utils/httpClient";
 import registerSchema from "../validations/registerSchema";
 
@@ -18,7 +16,7 @@ export default function useSignUp() {
       fullName: "",
       userName: "",
       email: "",
-      isAdmin: "",
+      isAdmin: false,
       password: "",
     },
     onSubmit: (values) => {
@@ -27,7 +25,7 @@ export default function useSignUp() {
     },
     validationSchema: registerSchema,
   });
-
+  console.log(formik.values);
   const onClose = () => {
     formik.resetForm();
   };
@@ -59,7 +57,7 @@ export default function useSignUp() {
       } else {
         toast({
           title: "Error",
-          description: error?.response?.data,
+          description: error?.response?.data || error?.message,
           status: "error",
           duration: 3000,
           isClosable: true,
