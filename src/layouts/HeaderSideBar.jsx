@@ -117,10 +117,22 @@ const SidebarContent = ({ ...props }) => (
         <FaUserDoctor />
         Doctors
       </NavItem>
-      <NavItem icon={BsFolder2}>Patients</NavItem>
+
       
+
+
       <NavLink to="/">
-        <NavItem icon={BsFolder2}>Appointments</NavItem>
+        <NavItem icon={BsFolder2}>Patients</NavItem>
+      </NavLink>
+
+
+
+      <NavLink to="/scheduleAppointment">
+        <NavItem icon={BsFolder2}>Schedule Appointment</NavItem>
+      </NavLink>
+
+      <NavLink to="/allAppointments">
+        <NavItem icon={BsFolder2}>+- All Appointments</NavItem>
       </NavLink>
 
       <NavLink to="/department">

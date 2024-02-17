@@ -6,6 +6,9 @@ import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import DoctorType from "./pages/DoctorType";
 import Department from "./pages/Department";
 import Appointments from "./pages/Appointments";
+import GetSlots from "./pages/GetSlots";
+import ScheduleAppointment from "./pages/ScheduleAppointment";
+import Patient from "./pages/Patient";
 
 function App() {
   return (
@@ -16,13 +19,19 @@ function App() {
             <Route path="/register" element={<RegisterRole />} />
 
             <Route path="/doctorType" element={<DoctorType />} />
+
+
+
+            <Route path="/" element={<Patient/>} />
+
+
+             {/* <Route path="/" element={<ScheduleAppointment/>} /> */}
+
+            <Route path="/scheduleAppointment" element={<GetSlots />} />
+
+
+            <Route path="/allAppointments" element={<Appointments />} />
             <Route path="/doctorType" element={<DoctorType />} />
-
-
-            <Route path="/" element={<Appointments />} />
-
-            <Route path="/doctorType" element={<DoctorType />} />
-
             <Route path="/department" element={<Department />} />
 
           </Route>

@@ -1,42 +1,46 @@
-import { useToast } from "@chakra-ui/react";
+import { useDisclosure, useToast } from "@chakra-ui/react";
 import { useFormik } from "formik";
-import { useState } from "react";
+import React, { useState } from "react";
+import { useQuery } from "react-query";
 import { useDispatch, useSelector } from "react-redux";
-import { httpClient } from "../utils/httpClient";
-import registerSchema from "../validations/registerSchema";
+import { loginAction } from "../../redux/slices/accountSlice";
+import { httpClient } from "../../utils/httpClient"
+import patientRegisterSchema from "../../validations/patientRegisterSchema";
 
-export default function useSignUp() {
+export default function useSignUpModal() {
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const { isOpen, onOpen, onClose: _onClose } = useDisclosure();
   const dispatch = useDispatch();
   const { token } = useSelector((state) => state.account);
 
   const formik = useFormik({
     initialValues: {
       fullName: "",
-      userName: "",
       email: "",
-      isAdmin: false,
+      birthDate: "",
+      patientIdentityNumber: "",
       password: "",
     },
     onSubmit: (values) => {
       setIsLoading(true);
       registerQuery(values);
     },
-    validationSchema: registerSchema,
+    validationSchema: patientRegisterSchema,
   });
+
   const onClose = () => {
     formik.resetForm();
+    _onClose();
   };
 
   const registerQuery = async (values) => {
     try {
-      const response = await httpClient.post("/Account/SignUp", values, {
+      const response = await httpClient.post("/Patient", values, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
       toast({
         title: "Signed Up.",
         description: "You have been signed up successfully!",
@@ -45,46 +49,29 @@ export default function useSignUp() {
         isClosable: true,
         position: "top-right",
       });
-
+    
       onClose();
     } catch (error) {
-      console.log("errors4:", error?.response?.data?.errors?.Email);
       if (
         error.response &&
         error.response?.data &&
         error.response?.data?.errors
       ) {
         formik.setErrors(error.response?.data?.errors);
-        toast({
-          title: "Error",
-          description:
-            error?.response?.data?.errors?.Email ||
-            error?.response?.data?.errors?.Password ||
-            error?.response?.data?.errors?.UserName ||
-            error?.response?.data?.Errors?.IsAdmin ||
-            error?.response?.data?.errors?.FullName ||
-            "Ups ... Something went wrong",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-          position: "top-right",
-        });
       } else {
-        console.log("errorrr:",error.response.data);
         toast({
           title: "Error",
-          description: error.response.data|| "Something went wrong",
+          description: error?.response?.data,
           status: "error",
           duration: 3000,
           isClosable: true,
           position: "top-right",
         });
-        console.log("errors1:", error.response.data.errors);
       }
     } finally {
       setIsLoading(false);
     }
   };
 
-  return { formik, isLoading };
+  return { onOpen, isOpen, onClose, formik, isLoading };
 }

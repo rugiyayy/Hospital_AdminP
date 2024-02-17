@@ -31,6 +31,7 @@ export default function DoctorType() {
   const getTypes = () => {
     return httpClient.get("/doctorType");
   };
+  
 
   const deleteType = useMutation(
     (id) =>

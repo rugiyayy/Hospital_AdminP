@@ -10,6 +10,8 @@ import {
   Input,
   InputGroup,
   InputRightElement,
+  Radio,
+  RadioGroup,
   Stack,
   VStack,
   useColorModeValue,
@@ -100,24 +102,28 @@ const RegisterRole = () => {
                 <FormControl>
                   <FormLabel>Is user Admin ?</FormLabel>
                   <Flex alignItems="center" gap="4px">
-                    <input
-                      type="radio"
-                      name="isAdmin"
-                      value="true"
-                      onChange={() => formik.setFieldValue("isAdmin", true)}
-                      checked={formik.values.isAdmin === true}
-                    />
-                    <label>True</label>
-
-                    <input
-                      style={{ marginLeft: "20px" }}
-                      type="radio"
-                      name="isAdmin"
-                      value="false"
-                      onChange={() => formik.setFieldValue("isAdmin", false)}
-                      checked={formik.values.isAdmin === false}
-                    />
-                    <label>False</label>
+                    <RadioGroup >
+                      {" "}
+                      <Radio
+                        type="radio"
+                        name="isAdmin"
+                        value="true"
+                        onChange={() => formik.setFieldValue("isAdmin", true)}
+                        checked={formik.values.isAdmin === true}
+                      >
+                        True
+                      </Radio>
+                      <Radio
+                        style={{ marginLeft: "20px" }}
+                        type="radio"
+                        name="isAdmin"
+                        value="false"
+                        onChange={() => formik.setFieldValue("isAdmin", false)}
+                        checked={formik.values.isAdmin === false}
+                      >
+                        False
+                      </Radio>
+                    </RadioGroup>
                   </Flex>
 
                   {formik.errors.isAdmin && formik.touched.isAdmin && (
