@@ -42,20 +42,40 @@ export default function useCreateDepartment() {
         setIsLoading(false);
       },
       onError: (error) => {
-        console.error("Error adding department", error);
         if (
           error.response &&
           error.response?.data &&
           error.response?.data?.errors
         ) {
-          formik.setErrors(error.response?.data?.errors);
-        } else {
+          const validationErrors = error.response.data.errors;
+          const errorMessage = Object.values(validationErrors).join("\v\r\n");
+
+          formik.setErrors(
+            error?.response?.data?.errors ||
+              error?.response?.data ||
+              "Something went wrong. Please try again later."
+          );
+
+          console.log("api validation error:", error?.response?.data?.errors);
           toast({
             title: "Error",
             description:
-              error.response?.data ||
-              error.message ||
-              "Something went wrong. Please try again later.",
+              errorMessage || "Something went wrong. Please try again later.",
+            status: "error",
+            duration: 4000,
+            isClosable: true,
+            position: "top-right",
+          });
+        } else {
+          console.log(" if elsejjjjjj error message :", error.response.data);
+
+          toast({
+            title: "Error",
+            description:
+              error?.response?.data ||
+              error?.response ||
+              "An unexpected error occurred. Please try again later.",
+
             status: "error",
             duration: 4000,
             isClosable: true,
@@ -70,7 +90,7 @@ export default function useCreateDepartment() {
   const onSubmit = (values) => {
     const formData = {
       Name: values.name,
-      ServiceCost:values.serviceCost,
+      ServiceCost: values.serviceCost,
       DepartmentDescription: values.departmentDescription,
     };
     setIsLoading(true);
@@ -86,7 +106,7 @@ export default function useCreateDepartment() {
     initialValues: {
       name: "",
       departmentDescription: "",
-      serviceCost:"",
+      serviceCost: "",
     },
     validationSchema: departmentsSchema,
     onSubmit: onSubmit,

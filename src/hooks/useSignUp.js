@@ -39,14 +39,15 @@ export default function useSignUp() {
 
       toast({
         title: "Signed Up.",
-        description: "You have been signed up successfully!",
+        description: "You have been signed up  Role successfully!",
         status: "success",
         duration: 3000,
         isClosable: true,
         position: "top-right",
       });
 
-      onClose();
+      // onClose();
+      formik.resetForm();
     } catch (error) {
       console.log("errors4:", error?.response?.data?.errors?.Email);
       if (
@@ -54,32 +55,40 @@ export default function useSignUp() {
         error.response?.data &&
         error.response?.data?.errors
       ) {
-        formik.setErrors(error.response?.data?.errors);
+        const validationErrors = error.response.data.errors;
+        const errorMessage = Object.values(validationErrors).join("\v\r\n");
+
+        formik.setErrors(
+          error?.response?.data?.errors ||
+            error?.response?.data ||
+            "Something went wrong. Please try again later."
+        );
+
+        console.log("api validation error:", error?.response?.data?.errors);
         toast({
           title: "Error",
           description:
-            error?.response?.data?.errors?.Email ||
-            error?.response?.data?.errors?.Password ||
-            error?.response?.data?.errors?.UserName ||
-            error?.response?.data?.Errors?.IsAdmin ||
-            error?.response?.data?.errors?.FullName ||
-            "Ups ... Something went wrong",
+            errorMessage || "Something went wrong. Please try again later.",
           status: "error",
-          duration: 3000,
+          duration: 4000,
           isClosable: true,
           position: "top-right",
         });
       } else {
-        console.log("errorrr:",error.response.data);
+        console.log(" if else error message :", error.response);
+
         toast({
           title: "Error",
-          description: error.response.data|| "Something went wrong",
+          description:
+            error?.response?.data ||
+            error?.response ||
+            "An unexpected error occurred. Please try again later.",
+
           status: "error",
-          duration: 3000,
+          duration: 4000,
           isClosable: true,
           position: "top-right",
         });
-        console.log("errors1:", error.response.data.errors);
       }
     } finally {
       setIsLoading(false);

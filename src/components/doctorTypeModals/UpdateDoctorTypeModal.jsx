@@ -25,14 +25,19 @@ export default function UpdateDoctorTypeModal({ isOpen, onClose, type }) {
   const { updateTypeDoctor } = useUpdateDoctorType(type.id, onClose);
 
   const onSubmit = (values) => {
-    const formData = {
-      Name: values.name,
-      Description: values.description,
-    };
-    updateTypeDoctor.mutate(formData);
-    onClose();
+    formik.validateForm().then((errors) => {
+      if (Object.keys(errors).length === 0) {
+        const formData = {
+          Name: values.name,
+          Description: values.description,
+        };
+        updateTypeDoctor.mutate(formData);
+        // onClose();
+      
+      }
+    });
+    // formik.resetForm();
   };
-
   const formik = useFormik({
     initialValues: {
       name: type.name,

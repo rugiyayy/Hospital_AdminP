@@ -51,7 +51,7 @@ export default function GetSlots() {
         );
         
         navigate(
-          `/?doctorId=${values.doctorId}&selectedDate=${values.selectedDate}`
+          `/schedule?doctorId=${values.doctorId}&selectedDate=${values.selectedDate}`
         );
       } catch (error) {
         console.error("Error fetching available time slots:", error);
@@ -95,7 +95,7 @@ export default function GetSlots() {
   if (doctorLoading) {
     return <Spinner1 />;
   }
-
+console.log(doctor);
   return (
     <Flex>
       <Box width="15%"></Box>
@@ -130,7 +130,7 @@ export default function GetSlots() {
               <option selected disabled value="default">
                 Select Doctor
               </option>
-              {doctor?.data?.map((x, i) => {
+              {doctor?.data?.doctors?.map((x, i) => {
                 return (
                   <option key={i} value={x.id}>
                     {x.fullName}

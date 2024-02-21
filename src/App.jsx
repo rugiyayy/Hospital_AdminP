@@ -9,6 +9,7 @@ import Appointments from "./pages/Appointments";
 import GetSlots from "./pages/GetSlots";
 import ScheduleAppointment from "./pages/ScheduleAppointment";
 import Patient from "./pages/Patient";
+import Doctor from "./pages/Doctor";
 
 function App() {
   return (
@@ -21,11 +22,12 @@ function App() {
             <Route path="/doctorType" element={<DoctorType />} />
 
 
+            <Route path="/" element={<Doctor/>} />
 
-            <Route path="/" element={<Patient/>} />
+            <Route path="/patient" element={<Patient/>} />
 
 
-             {/* <Route path="/" element={<ScheduleAppointment/>} /> */}
+             <Route path="/schedule" element={<ScheduleAppointment/>} />
 
             <Route path="/scheduleAppointment" element={<GetSlots />} />
 

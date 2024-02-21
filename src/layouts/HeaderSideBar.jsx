@@ -113,26 +113,24 @@ const SidebarContent = ({ ...props }) => (
       <NavItem icon={AiOutlineHome}>Dashboard</NavItem>
       <NavItem icon={AiOutlineTeam}>Team</NavItem>
       <NavItem icon={BsFolder2Open}>Projects</NavItem>
-      <NavItem>
-        <FaUserDoctor />
-        Doctors
-      </NavItem>
-
-      
-
 
       <NavLink to="/">
-        <NavItem icon={BsFolder2}>Patients</NavItem>
+        <NavItem>
+          <FaUserDoctor />
+          +Doctors
+        </NavItem>
       </NavLink>
 
-
+      <NavLink to="/patient">
+        <NavItem icon={BsFolder2}>+Patients</NavItem>
+      </NavLink>
 
       <NavLink to="/scheduleAppointment">
-        <NavItem icon={BsFolder2}>Schedule Appointment</NavItem>
+        <NavItem icon={BsFolder2}>+Schedule Appointment</NavItem>
       </NavLink>
 
       <NavLink to="/allAppointments">
-        <NavItem icon={BsFolder2}>+- All Appointments</NavItem>
+        <NavItem icon={BsFolder2}>+All Appointments</NavItem>
       </NavLink>
 
       <NavLink to="/department">
@@ -142,7 +140,7 @@ const SidebarContent = ({ ...props }) => (
       <NavLink to="/doctorType">
         <NavItem icon={BsFolder2}>+Doctor Type</NavItem>
       </NavLink>
-      <NavItem icon={BsFolder2}>Appointments</NavItem>
+
       <NavLink to="/register">
         <NavItem>
           <FaRegRegistered /> Register Page

@@ -168,7 +168,6 @@ export default function Appointments() {
     setStartDate("");
     setEndDate("");
     setPage(1);
-    setPerPage(5);
   };
   const handleReset = () => {
     setStartDate("");
@@ -177,7 +176,7 @@ export default function Appointments() {
   };
   const currentDate = new Date().toISOString().split("T")[0];
 
-  console.log(appointments?.totalCount > 0);
+  console.log(appointments);
   return (
     <Flex>
       <Box width="15%"></Box>
@@ -214,7 +213,7 @@ export default function Appointments() {
           )}
           {/* //! Seacrh Input */}
           {/* {appointments?.totalCount !=0 && ( */}
-          
+
           <Box>
             <Button
               onClick={handleResetAll}
@@ -239,7 +238,7 @@ export default function Appointments() {
 
             <Box width="20%" margin="0 60px ">
               <Select
-                value={
+                 value={
                   isActiveFilter === null
                     ? "all"
                     : isActiveFilter
@@ -247,14 +246,13 @@ export default function Appointments() {
                     : "inactive"
                 }
                 onChange={(e) => {
+                  setPage(1);
                   const selectedValue = e.target.value;
-                  setIsActiveFilter(
-                    selectedValue === "all"
-                      ? null
-                      : selectedValue === "active"
-                      ? true
-                      : false
-                  );
+                  if (selectedValue === "all") {
+                    setIsActiveFilter(null); 
+                  } else if (selectedValue==="active") {
+                    setIsActiveFilter(true); 
+                  }
                 }}
               >
                 <option value="all">All</option>
@@ -317,7 +315,6 @@ export default function Appointments() {
                 <Tbody>
                   {appointments?.appointments?.map((appointment, i) => (
                     <Tr key={appointment?.id}>
-                      {/* <Td>{i + 1 + page * perPage - perPage}</Td> */}
                       <Td width="5%">{i + 1 + page * perPage - perPage}</Td>
 
                       <Td width="25%" textAlign="center">
@@ -390,7 +387,10 @@ export default function Appointments() {
               </Button>
               <Button
                 onClick={() => setPage((prevPage) => prevPage + 1)}
-                isDisabled={appointments?.appointments?.length < perPage * page}
+                isDisabled={
+                  appointments?.totalCount < perPage * page ||
+                  appointments?.totalCount === perPage * page
+                }
                 _active={{
                   bg: "#dddfe2",
                   transform: "scale(0.98)",

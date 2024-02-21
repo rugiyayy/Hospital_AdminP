@@ -29,7 +29,7 @@ export default function UpdateDepartmentModal({ isOpen, onClose, department }) {
       ServiceCost:values.serviceCost,
     };
     updateDepartment.mutate(formData);
-    onClose();
+    // onClose();
   };
 
   const formik = useFormik({

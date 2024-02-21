@@ -1,28 +1,20 @@
-import { useDisclosure, useToast } from "@chakra-ui/react";
-import { useFormik } from "formik";
-import React, { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { httpClient } from "../../utils/httpClient";
+import { useToast } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
-import patientRegisterSchema from "../../validations/patientRegisterSchema";
+import { useFormik } from "formik";
+import { useEffect, useState } from "react";
+import updateDoctorSchema from "../../validations/updateDoctorSchema";
 
-export default function useSignUpModal() {
-  const queryClient = useQueryClient();
+export default function useUpdateDoctor(doctorId, onSuccessCallback) {
   const { token } = useSelector((state) => state.account);
-
-  const [isLoading, setIsLoading] = useState(false);
-
-  const { isOpen, onOpen, onClose: _onClose } = useDisclosure();
   const toast = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
 
-  const onClose = () => {
-    formik.resetForm();
-    _onClose();
-  };
-
-  const signUpPatient = useMutation(
+  const updateDoctor = useMutation(
     (formData) =>
-      httpClient.post("/patient", formData, {
+      httpClient.put(`/doctor/${doctorId}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -30,16 +22,17 @@ export default function useSignUpModal() {
     {
       onSuccess: () => {
         toast({
-          title: "Patient account created",
-          description: "Patient account has been successfully created.",
+          title: "Doctor information Updated",
+          description:
+            "Doctor account information has been successfully updated.",
           status: "success",
           duration: 4000,
           isClosable: true,
           position: "top-right",
         });
-        formik.resetForm();
-
         setIsLoading(false);
+        onSuccessCallback();
+        queryClient.invalidateQueries("Doctor");
       },
       onError: (error) => {
         if (
@@ -60,6 +53,18 @@ export default function useSignUpModal() {
           toast({
             title: "Error",
             description:
+              // error?.response?.data?.errors?.FullName ||
+              // error?.response?.data?.errors?.Password ||
+              // error?.response?.data?.errors?.Photo ||
+              // error?.response?.data?.errors?.DepartmentId ||
+              // error?.response?.data?.errors?.DoctorTypeId ||
+              // error?.response?.data?.errors?.Email ||
+              // error?.response?.data?.errors?.BirthDate ||
+              // error?.response?.data?.errors?.PhoneNumber ||
+              // error?.response?.data?.errors?.RoomNumber ||
+              // error?.response?.data?.errors?.EndTime ||
+              // error?.response?.data?.errors?.StartTime ||
+              // error?.response?.data ||
               errorMessage || "Something went wrong. Please try again later.",
             status: "error",
             duration: 4000,
@@ -86,42 +91,30 @@ export default function useSignUpModal() {
       },
     }
   );
-
+  ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   const onSubmit = (values) => {
-    formik.validateForm().then((errors) => {
-      if (Object.keys(errors).length === 0) {
-        const formData = {
-          FullName: values.fullName,
-          Email: values.email,
-          BirthDate: values.birthDate,
-          PhoneNumber: values.phoneNumber,
-          PatientIdentityNumber: values.patientIdentityNumber,
-          Password: values.password,
-        };
-        setIsLoading(true);
-        signUpPatient.mutate(formData);
-      }
-    });
+    const formData = {
+      
+      DoctorDetail: {
+        PhoneNumber: values.doctorDetail.phoneNumber,
+        Email: values.doctorDetail.email,
+      },
+    };
+    setIsLoading(true);
+    updateDoctor.mutate(formData);
   };
-
-  useEffect(() => {
-    if (!isLoading && signUpPatient.isSuccess) {
-      queryClient.invalidateQueries("patient");
-    }
-  }, [isLoading, signUpPatient.isSuccess, queryClient]);
 
   const formik = useFormik({
     initialValues: {
-      fullName: "",
-      email: "",
-      birthDate: "",
-      phoneNumber: "",
-      patientIdentityNumber: "",
-      password: "",
+      doctorDetail: {
+        phoneNumber: "",
+        email: "",
+      },
+      //   photo: "",
     },
-    validationSchema: patientRegisterSchema,
+    validationSchema: updateDoctorSchema,
     onSubmit: onSubmit,
   });
 
-  return { onOpen, isOpen, onClose, formik, isLoading };
+  return { formik, updateDoctor, isLoading };
 }

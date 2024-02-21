@@ -76,7 +76,7 @@ export default function ScheduleAppointment() {
   };
   const {
     isLoading: patientLoading,
-    data: patient,
+    data: patients,
     error: patientError,
   } = useQuery(["patient"], () => getPatients(), {
     refetchOnWindowFocus: false,
@@ -143,14 +143,18 @@ export default function ScheduleAppointment() {
   );
 
   const onSubmit = (values) => {
-    const formData = {
-      StartTime: values.startTime,
-      DoctorId: parsedDoctorId,
-      PatientId: values.patientId,
-      Description: values.description,
-    };
+    formik.validateForm().then((errors) => {
+      if (Object.keys(errors).length === 0) {
+        const formData = {
+          StartTime: values.startTime,
+          DoctorId: parsedDoctorId,
+          PatientId: values.patientId,
+          Description: values.description,
+        };
 
-    createAppointment.mutate(formData);
+        createAppointment.mutate(formData);
+      }
+    });
   };
 
   const formik = useFormik({
@@ -170,6 +174,26 @@ export default function ScheduleAppointment() {
     const startTime =
       selectedTime === time ? selectedDate : `${selectedDate} ${time}`;
     formik.setFieldValue("startTime", startTime);
+  };
+
+  //!!!!!!!!!!!!!!!!!!!!!!
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredPatients, setFilteredPatients] = useState([]);
+  const [selectedPatient, setSelectedPatient] = useState(null);
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+    const filtered = patients?.data?.patients?.filter((patient) =>
+      patient.fullName.toLowerCase().includes(event.target.value.toLowerCase())
+    );
+    setFilteredPatients(filtered);
+  };
+
+  const handleSelectPatient = (patient) => {
+    setSelectedPatient(patient);
+    setFilteredPatients([]);
+    setSearchQuery(patient.fullName);
+    formik.setFieldValue("patientId", patient.id);
   };
 
   if (patientLoading) {
@@ -223,6 +247,7 @@ export default function ScheduleAppointment() {
               {timeSlotLoading && <p>Loading...</p>} {/* potom napishu */}
               {timeSlotError && <p>Error: {timeSlotError.message}</p>}
             </Flex>
+
             <Flex
               border="1px solid red"
               width="45%"
@@ -259,24 +284,30 @@ export default function ScheduleAppointment() {
                     margin="20px 0 50px"
                     justifyContent="space-between"
                   >
-                    <Select
-                      width="58%"
-                      name="patientId"
-                      value={formik.values.patientId}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                    >
-                      <option selected disabled value="default">
-                        Select Patient
-                      </option>
-                      {patient?.data?.map((x, i) => {
-                        return (
-                          <option key={i} value={x.id}>
-                            {x.fullName}
-                          </option>
-                        );
-                      })}
-                    </Select>
+                    //!
+                    <FormControl gap="20px">
+                      <Input
+                        placeholder="Search Patients by Name"
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                      />
+                      {filteredPatients.length > 0 && (
+                        <Box maxHeight="200px" overflowY="auto">
+                          {filteredPatients.map((patient, index) => (
+                            <Button
+                              key={index}
+                              variant="outline"
+                              onClick={() => handleSelectPatient(patient)}
+                              width="100%"
+                              textAlign="left"
+                            >
+                              {patient.fullName}
+                            </Button>
+                          ))}
+                        </Box>
+                      )}
+                    </FormControl>
+                    //!!
                   </Flex>
                 </FormControl>
                 <ButtonGroup margin="20px 0 0">

@@ -32,21 +32,22 @@ export default function SignUpModal(prop) {
     <>
       {" "}
       <Button
-        backgroundColor={prop.bg}
-        color={prop.color}
-        _hover={{ bg: prop.hoverBg, color: prop.hoverColor }}
+        fontWeight="700"
+        color="green"
+        fontSize="16px"
+        marginLeft="16px"
+        padding="0 3rem"
         onClick={onOpen}
       >
-        {prop.name}
+        sign up pp{" "}
       </Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader textAlign="center">
             <Text as="h1" fontSize="28px" fontWeight="bold">
-              Welcome!
+              Sign Up Patient
             </Text>{" "}
-            <Text as="p">Sign Up </Text>
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
@@ -55,9 +56,10 @@ export default function SignUpModal(prop) {
               <Input
                 onChange={formik.handleChange}
                 value={formik.values.fullName}
+                onBlur={formik.handleBlur}
                 name="fullName"
                 type="text"
-                placeholder="Full Name"
+               
               />
               {formik.errors.fullName && formik.touched.fullName && (
                 <span style={{ color: "red" }}>{formik.errors.fullName}</span>
@@ -72,7 +74,7 @@ export default function SignUpModal(prop) {
                   value={formik.values.phoneNumber}
                   name="phoneNumber"
                   type="tel"
-                  placeholder="Full Name"
+                
                 />
               </InputGroup>
               {formik.errors.phoneNumber && formik.touched.phoneNumber && (
@@ -89,7 +91,6 @@ export default function SignUpModal(prop) {
                 value={formik.values.email}
                 name="email"
                 type="text"
-                placeholder="Email"
               />
               {formik.errors.email && formik.touched.email && (
                 <span style={{ color: "red" }}>{formik.errors.email}</span>
@@ -102,7 +103,6 @@ export default function SignUpModal(prop) {
                 value={formik.values.patientIdentityNumber}
                 name="patientIdentityNumber"
                 type="text"
-                placeholder="patientIdentityNumber"
               />
               {formik.errors.patientIdentityNumber &&
                 formik.touched.patientIdentityNumber && (
@@ -118,7 +118,6 @@ export default function SignUpModal(prop) {
                 value={formik.values.birthDate}
                 name="birthDate"
                 type="date"
-                placeholder="Birth Date"
               />
               {formik.errors.birthDate && formik.touched.birthDate && (
                 <span style={{ color: "red" }}>{formik.errors.birthDate}</span>
@@ -135,7 +134,6 @@ export default function SignUpModal(prop) {
                   value={formik.values.password}
                   pr="4.5rem"
                   type={show ? "text" : "password"}
-                  placeholder="Enter password"
                 />
                 <InputRightElement width="4.5rem">
                   <Button h="1.75rem" size="sm" onClick={handleClick}>
@@ -160,8 +158,9 @@ export default function SignUpModal(prop) {
             >
               Sign Up
             </Button>
-
-            
+            <Button padding="0 24px" onClick={onClose}>
+              Cancel
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
