@@ -17,6 +17,8 @@ export default function useUpdateDoctor(doctorId, onSuccessCallback) {
       httpClient.put(`/doctor/${doctorId}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+          "Content-Type": "multipart/form-data",
         },
       }),
     {
@@ -32,7 +34,7 @@ export default function useUpdateDoctor(doctorId, onSuccessCallback) {
         });
         setIsLoading(false);
         onSuccessCallback();
-        queryClient.invalidateQueries("Doctor");
+        queryClient.invalidateQueries("doctor"); // Move it here
       },
       onError: (error) => {
         if (
@@ -73,7 +75,7 @@ export default function useUpdateDoctor(doctorId, onSuccessCallback) {
           });
         } else {
           console.log(" if else error message :", error.response);
-         
+
           toast({
             title: "Error",
             description:
@@ -94,10 +96,10 @@ export default function useUpdateDoctor(doctorId, onSuccessCallback) {
   ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   const onSubmit = (values) => {
     const formData = {
-      
+      Photo: values.photo,
       DoctorDetail: {
-        PhoneNumber: values.doctorDetail.phoneNumber,
-        Email: values.doctorDetail.email,
+        PhoneNumber: values.phoneNumber,
+        Email: values.email,
       },
     };
     setIsLoading(true);
@@ -106,11 +108,10 @@ export default function useUpdateDoctor(doctorId, onSuccessCallback) {
 
   const formik = useFormik({
     initialValues: {
-      doctorDetail: {
-        phoneNumber: "",
-        email: "",
-      },
-      //   photo: "",
+      phoneNumber: "",
+      email: "",
+      photo: null,
+
     },
     validationSchema: updateDoctorSchema,
     onSubmit: onSubmit,

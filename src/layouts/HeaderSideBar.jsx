@@ -20,6 +20,8 @@ import { BsFolder2, BsCalendarCheck, BsFolder2Open } from "react-icons/bs";
 import { FiMenu } from "react-icons/fi";
 import { RiFlashlightFill } from "react-icons/ri";
 import { NavLink } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHospital } from "@fortawesome/free-solid-svg-icons";
 
 export default function HeaderSideBar() {
   const { isOpen, onClose, onOpen } = useDisclosure();
@@ -92,15 +94,15 @@ const SidebarContent = ({ ...props }) => (
     w="60"
     {...props}
   >
-    <Flex px="4" py="5" align="center">
-      <Icon as={RiFlashlightFill} h={8} w={8} />
+    <Flex  px="4" py="10" align="center">
+    <FontAwesomeIcon fontSize="36px" icon={faHospital} />
       <Text
         fontSize="2xl"
         ml="2"
         color={useColorModeValue("brand.500", "white")}
         fontWeight="semibold"
       >
-        Welcome To Admin Page !!!
+        Welcome !
       </Text>
     </Flex>
     <Flex

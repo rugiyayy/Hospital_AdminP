@@ -71,6 +71,19 @@ export default function Doctor() {
     getTypes
   );
 
+  const getRooms = async () => {
+    const response = await httpClient.get("/examinationRoom", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  };
+  const { isLoading: isLoadingRooms, data: rooms } = useQuery(
+    "rooms",
+    getRooms
+  );
+
   const getDoctors = async () => {
     const params = {
       page,
@@ -183,7 +196,7 @@ export default function Doctor() {
   };
   const handleResetAll = () => {
     setSearchQuery("");
-    setExaminationRoomNumber(null);
+    setExaminationRoomNumber("");
     setDepartmentName("");
     setDoctorTypeName("");
     setPage(1);
@@ -208,7 +221,7 @@ export default function Doctor() {
   //////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   
-  console.log(types?.types);
+  console.log(rooms);
   return (
     <Flex>
       <Box width="15%"></Box>
@@ -231,7 +244,7 @@ export default function Doctor() {
           marginTop="10px"
           width="200px"
         >
-          {doctors?.examinationRooms?.map((room) => (
+          {rooms?.map((room) => (
             <option key={room?.id} value={room?.roomNumber}>
               {room?.roomNumber}
             </option>

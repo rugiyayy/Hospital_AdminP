@@ -1,6 +1,6 @@
 import { useDisclosure, useToast } from "@chakra-ui/react";
 import { useFormik } from "formik";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { httpClient } from "../../utils/httpClient";
 import { useSelector } from "react-redux";
@@ -14,6 +14,7 @@ export default function useSignUpDoctorModal() {
 
   const { isOpen, onOpen, onClose: _onClose } = useDisclosure();
   const toast = useToast();
+  const fileInputRef = useRef(null);
 
   const onClose = () => {
     formik.resetForm();
@@ -26,6 +27,9 @@ export default function useSignUpDoctorModal() {
       httpClient.post("/doctor", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+          "Content-Type": "multipart/form-data",
+          // "type": "formData"
         },
       }),
     {
@@ -106,21 +110,26 @@ export default function useSignUpDoctorModal() {
       console.log("Validation errors:", errors);
       if (Object.keys(errors).length === 0) {
         const formData = {
-          
           FullName: values.fullName,
           DepartmentId: values.departmentId,
           DoctorTypeId: values.doctorTypeId,
-          Photo: values.photo,
           Password: values.password,
+          Photo: values.photo,
+          DoctorDetail: {
+            PhoneNumber: values.phoneNumber,
+            Email: values.email,
+            BirthDate: values.birthDate,
+          
+          },
 
-          PhoneNumber: values.phoneNumber,
-          Email: values.email,
-          BirthDate: values.birthDate,
+          WorkingSchedule: {
+            StartTime: values.startTime,
+            EndTime: values.endTime,
+          },
 
-          StartTime: values.startTime,
-          EndTime: values.endTime,
-
-          RoomNumber: values.roomNumber,
+          ExaminationRoom: {
+            RoomNumber: values.roomNumber,
+          },
         };
 
         setIsLoading(true);

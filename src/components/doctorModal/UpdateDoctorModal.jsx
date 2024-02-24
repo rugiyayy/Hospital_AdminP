@@ -14,7 +14,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import { useSelector } from "react-redux";
 import patientRegisterSchema from "../../validations/patientRegisterSchema";
@@ -27,16 +27,24 @@ import { useDropzone } from "react-dropzone";
 export default function UpdateDoctorModal({ isOpen, onClose, doctor }) {
   const { token } = useSelector((state) => state.account);
   const { updateDoctor } = useUpdateDoctor(doctor.id, onClose);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setSelectedImage(URL.createObjectURL(file));
+      formik.setFieldValue("photo", file);
+    }
+  };
 
   const onSubmit = (values) => {
     formik.validateForm().then((errors) => {
       if (Object.keys(errors).length === 0) {
         const formData = {
           DoctorDetail: {
-          PhoneNumber: values.doctorDetail.phoneNumber,
-          Email: values.doctorDetail.email,
-        },
-          // Photo: values.photo, // Assuming values.photo contains binary data
+            PhoneNumber: values.doctorDetail.phoneNumber,
+            Email: values.doctorDetail.email,
+          },
+          Photo: values.photo,
         };
         console.log(doctor);
 
@@ -51,6 +59,8 @@ export default function UpdateDoctorModal({ isOpen, onClose, doctor }) {
         phoneNumber: doctor.doctorDetail.phoneNumber,
         email: doctor.doctorDetail.email,
       },
+      photo: doctor.photo,
+
     },
 
     validationSchema: updateDoctorSchema,
@@ -101,7 +111,6 @@ export default function UpdateDoctorModal({ isOpen, onClose, doctor }) {
               pr="4.5rem"
               type="email"
             />
-            {/* Display validation errors if any */}
             {formik.errors.doctorDetail?.email &&
               formik.touched.doctorDetail?.email && (
                 <span style={{ color: "red" }}>
@@ -109,6 +118,29 @@ export default function UpdateDoctorModal({ isOpen, onClose, doctor }) {
                 </span>
               )}
           </FormControl>
+          <FormControl mt={4}>
+            <FormLabel>Photo</FormLabel>
+            <Input
+              onChange={handleImageChange}
+              accept="image/*"
+              onBlur={formik.handleBlur}
+              name="photo"
+              type="file"
+            />{" "}
+            {selectedImage && (
+              <Box mt={2}>
+                <img
+                  src={selectedImage}
+                  alt="Selected"
+                  style={{ maxWidth: "100%", height: "auto" }}
+                />
+              </Box>
+            )}
+            {formik.errors.photo && formik.touched.photo && (
+              <span style={{ color: "red" }}>{formik.errors.photo}</span>
+            )}
+          </FormControl>
+
           {/* <FormControl mt={4}>
             <FormLabel>Photo</FormLabel>
             <Box {...getRootProps()} borderWidth="2px" p="20px" cursor="pointer">
