@@ -30,7 +30,7 @@ export default function useUpdateDepartment(departmentId, onSuccessCallback) {
           position: "top-right",
         });
         setIsLoading(false);
-        queryClient.invalidateQueries("department");
+        queryClient.invalidateQueries("departments");
         onSuccessCallback();
       },
        onError: (error) => {

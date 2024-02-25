@@ -69,6 +69,7 @@ export default function Department() {
       }),
     {
       onSuccess: () => {
+        queryClient.invalidateQueries("departments");
         toast({
           title: "Department deleted",
           description: "The department has been successfully deleted.",
@@ -77,6 +78,8 @@ export default function Department() {
           isClosable: true,
           position: "top-right",
         });
+    
+
       },
       onError: (error) => {
         console.error("Error deleting department", error);
@@ -100,13 +103,13 @@ export default function Department() {
     data: departments,
     isError,
     error,
-  } = useQuery(["depatment", page, perPage, searchQuery], getDepartments, {
+  } = useQuery(["departments", page, perPage, searchQuery], getDepartments, {
     refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
     if (!isLoading && deleteDepartment.isSuccess) {
-      queryClient.invalidateQueries("department");
+      queryClient.invalidateQueries("departments");
     }
   }, [isLoading, deleteDepartment.isSuccess, queryClient]);
 

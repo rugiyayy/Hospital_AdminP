@@ -10,6 +10,8 @@ import GetSlots from "./pages/GetSlots";
 import ScheduleAppointment from "./pages/ScheduleAppointment";
 import Patient from "./pages/Patient";
 import Doctor from "./pages/Doctor";
+import SenEmail from "./pages/SentEmail";
+import SentEmail from "./pages/SentEmail";
 
 function App() {
   return (
@@ -35,6 +37,10 @@ function App() {
             <Route path="/allAppointments" element={<Appointments />} />
             <Route path="/doctorType" element={<DoctorType />} />
             <Route path="/department" element={<Department />} />
+            <Route path="/sentEmail" element={<SentEmail />} />
+
+
+            
 
           </Route>
         </Routes>

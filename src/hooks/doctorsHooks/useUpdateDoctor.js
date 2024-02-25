@@ -34,7 +34,7 @@ export default function useUpdateDoctor(doctorId, onSuccessCallback) {
         });
         setIsLoading(false);
         onSuccessCallback();
-        queryClient.invalidateQueries("doctor"); // Move it here
+        queryClient.invalidateQueries("doctor");
       },
       onError: (error) => {
         if (

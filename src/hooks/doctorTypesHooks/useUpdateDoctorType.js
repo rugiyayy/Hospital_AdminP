@@ -31,7 +31,7 @@ export default function useUpdateDoctorType(doctorTypeId, onSuccessCallback) {
         });
         setIsLoading(false);
         onSuccessCallback();
-        queryClient.invalidateQueries("docType");
+        queryClient.invalidateQueries("doctorType");
       },
       onError: (error) => {
         console.error("Error updating doctor type", error);

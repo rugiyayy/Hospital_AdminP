@@ -21,32 +21,33 @@ import React, { useEffect, useState } from "react";
 import { colors } from "../components/Constants";
 import { httpClient } from "../utils/httpClient";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import CreateDoctorTypeModal from "../components/doctorTypeModals/CreateDoctorTypeModal";
+import DoctorTypeModal from "../components/doctorTypeModals/CreateDoctorTypeModal";
 import { useSelector } from "react-redux";
+import useUpdateDoctorType from "../hooks/doctorTypesHooks/useUpdateDoctorType";
 import UpdateDoctorTypeModal from "../components/doctorTypeModals/UpdateDoctorTypeModal";
+import CreateDepartmentModal from "../components/departmentModals/CreateDepartmentModal";
+import UpdateDepartmentModal from "../components/departmentModals/UpdateDepartmentModal";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Search2Icon } from "@chakra-ui/icons";
+import { EmailIcon, Search2Icon } from "@chakra-ui/icons";
 
-export default function DoctorType() {
+export default function SentEmail() {
   const { token } = useSelector((state) => state.account);
   const toast = useToast();
-  const [selectedType, setSelectedType] = useState(null);
+  const [selectedDepartment, setselectedDepartment] = useState(null);
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(5);
-  const [searchQuery, setSearchQuery] = useState("");
 
   const navigate = useNavigate();
   const location = useLocation();
 
-  const getTypes = async () => {
+  const getSentEmails = async () => {
     const params = {
       page,
       perPage,
-      typeName: searchQuery,
     };
 
-    const response = await httpClient.get("/doctorType", {
+    const response = await httpClient.get("/email", {
       params,
       headers: {
         Authorization: `Bearer ${token}`,
@@ -55,18 +56,21 @@ export default function DoctorType() {
     return response.data;
   };
 
-  const deleteType = useMutation(
+  //!
+
+  const deleteSentEmails = useMutation(
     (id) =>
-      httpClient.delete(`/doctorType/${id}`, {
+      httpClient.delete(`/email/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       }),
     {
       onSuccess: () => {
+        queryClient.invalidateQueries("sentEmails");
         toast({
-          title: "Doctor type deleted",
-          description: "The type has been successfully deleted.",
+          title: "Emails deleted",
+          description: "The emails has been successfully deleted.",
           status: "success",
           duration: 4000,
           isClosable: true,
@@ -74,7 +78,7 @@ export default function DoctorType() {
         });
       },
       onError: (error) => {
-        console.error("Error deleting doctor type", error);
+        console.error("Error deleting email", error);
         toast({
           title: "Error",
           description:
@@ -92,36 +96,28 @@ export default function DoctorType() {
 
   const {
     isLoading,
-    data: types,
+    data: email,
     isError,
     error,
-  } = useQuery(["doctorType", page, perPage, searchQuery], getTypes, {
+  } = useQuery(["sentEmails", page, perPage], getSentEmails, {
     refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
-    if (!isLoading && deleteType.isSuccess) {
-      queryClient.invalidateQueries("doctorType");
+    if (!isLoading && deleteSentEmails.isSuccess) {
+      queryClient.invalidateQueries("departments");
     }
-  }, [isLoading, deleteType.isSuccess, queryClient]);
+  }, [isLoading, deleteSentEmails.isSuccess, queryClient]);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
-    urlParams.set("typeName", searchQuery.toString());
+
     urlParams.set("page", page.toString());
     urlParams.set("perPage", perPage.toString());
 
     navigate(`?${urlParams.toString()}`);
-  }, [searchQuery, page, perPage, navigate]);
+  }, [page, perPage, navigate]);
 
-  const handleSearchChange = (e) => {
-    e.preventDefault();
-    setSearchQuery(e.target.value);
-    setPage(1);
-  };
-  const handleUpdateClick = (type) => {
-    setSelectedType(type);
-  };
   const handlePreviousPage = () => {
     if (page > 1) {
       setPage(page - 1);
@@ -135,7 +131,6 @@ export default function DoctorType() {
     return <div>Error! {error.message}</div>;
   }
 
-  console.log(types);
   return (
     <Flex>
       <Box width="15%"></Box>
@@ -146,77 +141,63 @@ export default function DoctorType() {
           size="md"
           color={colors.secondary}
         >
-          <Text as="span">Doctor Types</Text>
-
-          <CreateDoctorTypeModal initialData={selectedType} />
+          <Text as="span">Sent Emails</Text>
         </Heading>
-        <InputGroup w="50%" margin="3rem auto">
-          <InputLeftElement pointerEvents="none">
-            <Search2Icon marginLeft={3} color="gray.600" />
-          </InputLeftElement>
-          <Input
-            autoFocus
-            borderRadius="20px"
-            type="search"
-            placeholder="Search Type"
-            value={searchQuery}
-            onChange={handleSearchChange}
-          />
-        </InputGroup>
-        <Table w="90%" variant="simple" margin="50px auto ">
-          <Thead>
-            <Tr>
-              <Th></Th>
-              <Th>Type Name </Th>
-              <Th textAlign="center">Description</Th>
-              <Th textAlign="end"></Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {types?.types?.map((type, i) => (
-              <Tr key={type.id}>
-                {/* <Td>{i + 1 + page * perPage - perPage}</Td> */}
-                <Td width="5%" border="1px solid red">
-                  {i + 1 + page * perPage - perPage}
-                </Td>
 
-                <Td width="30%" border="1px solid red">
-                  {type?.name}
-                </Td>
-                <Td width="45%" border="1px solid red" textAlign="center">
-                  {type?.description}
-                </Td>
-
-                <Td
-                  width="20%"
-                  border="1px solid red"
-                  gap="12px"
-                  textAlign="end"
-                  fontWeight="700"
-                >
-                  <Button onClick={() => handleUpdateClick(type)} color="Blue">
-                    Update
-                  </Button>
-                  <Button
-                    onClick={() => deleteType.mutate(type.id)}
-                    marginLeft="12px"
-                    color="red"
-                  >
-                    Delete
-                  </Button>
-                </Td>
-              </Tr>
-            ))}
-          </Tbody>
-        </Table>
-        {selectedType && (
-          <UpdateDoctorTypeModal
-            isOpen={!!selectedType}
-            onClose={() => setSelectedType(null)}
-            type={selectedType}
-          />
+        {isError && (
+          <Text
+            color={colors.primary}
+            fontWeight="700"
+            fontSize="32px"
+            textAlign="center"
+            padding="3rem 0 "
+            as="h2"
+          >
+            Something went wrong , please try again later
+          </Text>
         )}
+        {email?.totalCount > 0 && (
+          <Table w="90%" variant="simple" margin="50px auto ">
+            <Thead>
+              <Tr>
+                <Th></Th>
+                <Th textAlign="center">To</Th>
+                <Th textAlign="center">Subject</Th>
+                <Th textAlign="center">Message</Th>
+                <Th textAlign="center">Sent Time</Th>
+                <Th textAlign="end"></Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {email?.emails?.map((email, i) => (
+                <Tr key={email?.id}>
+                  <Td w="5%">{i + 1 + page * perPage - perPage}</Td>
+                  <Td w="20%">{email?.to}</Td>
 
+                  <Td w="20%" textAlign="center">
+                    {email?.subject}
+                  </Td>
+                  <Td w="30%" textAlign="center">
+                    {email?.body}
+                  </Td>
+
+                  <Td w="20%" textAlign="end">
+                    {email?.sentTime}
+                  </Td>
+                  <Td w="5%" textAlign="end">
+                    <Button
+                      onClick={() => deleteSentEmails.mutate(email?.id)}
+                      marginLeft="12px"
+                      color="red"
+                    >
+                      Delete
+                    </Button>
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        )}
         <ButtonGroup>
           <Button
             type="button"
@@ -241,8 +222,8 @@ export default function DoctorType() {
               e.preventDefault();
             }}
             isDisabled={
-              types?.totalCount < perPage * page ||
-               types?.totalCount === perPage * page
+              email?.totalCount < perPage * page ||
+              email?.totalCount === perPage * page
             }
             _active={{
               bg: "#dddfe2",

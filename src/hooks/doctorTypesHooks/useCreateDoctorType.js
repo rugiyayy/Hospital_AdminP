@@ -97,7 +97,7 @@ export default function useCreateDoctorType() {
 
   useEffect(() => {
     if (!isLoading && createTypeDoctor.isSuccess) {
-      queryClient.invalidateQueries("docType");
+      queryClient.invalidateQueries("doctorType");
     }
   }, [isLoading, createTypeDoctor.isSuccess, queryClient]);
 

@@ -34,7 +34,7 @@ export default function Patient() {
   const [selectedPatient, setselectedPatient] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(2);
+  const [perPage, setPerPage] = useState(5);
   const navigate = useNavigate();
   const location = useLocation();
 

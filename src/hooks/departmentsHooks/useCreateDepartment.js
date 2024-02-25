@@ -98,7 +98,7 @@ export default function useCreateDepartment() {
   };
   useEffect(() => {
     if (!isLoading && createDepartment.isSuccess) {
-      queryClient.invalidateQueries("department");
+      queryClient.invalidateQueries("departments");
     }
   }, [isLoading, createDepartment.isSuccess, queryClient]);
 

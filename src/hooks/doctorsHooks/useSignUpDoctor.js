@@ -119,7 +119,6 @@ export default function useSignUpDoctorModal() {
             PhoneNumber: values.phoneNumber,
             Email: values.email,
             BirthDate: values.birthDate,
-          
           },
 
           WorkingSchedule: {

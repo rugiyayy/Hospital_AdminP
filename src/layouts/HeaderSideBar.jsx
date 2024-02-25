@@ -142,7 +142,10 @@ const SidebarContent = ({ ...props }) => (
       <NavLink to="/doctorType">
         <NavItem icon={BsFolder2}>+Doctor Type</NavItem>
       </NavLink>
-
+      <NavLink to="/sentEmail">
+        <NavItem icon={BsFolder2}>+Sent Emails</NavItem>
+      </NavLink>
+      
       <NavLink to="/register">
         <NavItem>
           <FaRegRegistered /> Register Page
