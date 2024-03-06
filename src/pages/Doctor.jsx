@@ -9,31 +9,27 @@ import {
   InputGroup,
   InputLeftElement,
   Select,
-  Table,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
-  Tr,
   useToast,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { colors } from "../components/Constants";
+import { Spinner1, colors } from "../components/Constants";
 import { httpClient } from "../utils/httpClient";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useSelector } from "react-redux";
-import DoctorSignUpModal from "../components/doctorModal/DoctorSignUpModal";
 import UpdateDoctorModal from "../components/doctorModal/UpdateDoctorModal";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Search2Icon } from "@chakra-ui/icons";
 import DoctorTable from "../components/Doctor/DoctorTable";
+import Pagination from "../components/Pagination";
 
 export default function Doctor() {
-  const { token } = useSelector((state) => state.account);
+  const { token, role } = useSelector((state) => state.account);
   const toast = useToast();
   const queryClient = useQueryClient();
   const [selectedDoctor, setselectedDoctor] = useState(null);
+  const [selectedDoctorDetail, setSelectedDoctorDetail] = useState(null);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [doctorTypeName, setDoctorTypeName] = useState("");
   const [departmentName, setDepartmentName] = useState("");
@@ -53,10 +49,14 @@ export default function Doctor() {
     });
     return response.data;
   };
-  const { isLoading: isLoadingDepartments, data: departments } = useQuery(
-    "departments",
-    getDepartments
-  );
+  const {
+    isLoading: isLoadingDepartments,
+    data: departments,
+    error: departmentrror,
+  } = useQuery(["departments"], () => getDepartments(), {
+    refetchOnWindowFocus: false,
+    keepPreviousData: true,
+  });
 
   const getTypes = async () => {
     const response = await httpClient.get("/doctorType", {
@@ -66,10 +66,15 @@ export default function Doctor() {
     });
     return response.data;
   };
-  const { isLoading: isLoadingTypes, data: types } = useQuery(
-    "doctorTypes",
-    getTypes
-  );
+
+  const {
+    isLoading: isLoadingTypes,
+    data: types,
+    error: typeError,
+  } = useQuery("doctorTypes", () => getTypes(), {
+    refetchOnWindowFocus: false,
+    keepPreviousData: true,
+  });
 
   const getRooms = async () => {
     const response = await httpClient.get("/examinationRoom", {
@@ -79,10 +84,15 @@ export default function Doctor() {
     });
     return response.data;
   };
-  const { isLoading: isLoadingRooms, data: rooms } = useQuery(
-    "rooms",
-    getRooms
-  );
+
+  const {
+    isLoading: isLoadingRooms,
+    data: rooms,
+    error: roomError,
+  } = useQuery(["rooms"], () => getRooms(), {
+    refetchOnWindowFocus: false,
+    keepPreviousData: true,
+  });
 
   const getDoctors = async () => {
     const params = {
@@ -127,8 +137,8 @@ export default function Doctor() {
         toast({
           title: "Error",
           description:
-            error.response?.data ||
-            error.message ||
+            error?.response?.data ||
+            error?.message ||
             "Something went wrong. Please try again later.",
           status: "error",
           duration: 4000,
@@ -140,10 +150,9 @@ export default function Doctor() {
   );
 
   const {
-    isLoading,
-    data: doctors,
-    isError,
-    error,
+    isLoading: doctorLoading,
+    data: doctorsData,
+    error: doctorError,
   } = useQuery(
     [
       "doctor",
@@ -157,18 +166,18 @@ export default function Doctor() {
     getDoctors,
     {
       refetchOnWindowFocus: false,
+      keepPreviousData: true,
     }
   );
 
   useEffect(() => {
-    if (!isLoading && deleteDoctor.isSuccess) {
+    if (!doctorLoading && deleteDoctor.isSuccess) {
       queryClient.invalidateQueries("doctor");
     }
-  }, [isLoading, deleteDoctor.isSuccess, queryClient]);
+  }, [doctorLoading, deleteDoctor.isSuccess, queryClient]);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
-    urlParams.set("doctorName", searchQuery.toString());
     urlParams.set("doctorTypeName", doctorTypeName.toString());
     urlParams.set("departmentName", departmentName.toString());
     urlParams.set("examinationRoomNumber", examinationRoomNumber);
@@ -177,7 +186,6 @@ export default function Doctor() {
 
     navigate(`?${urlParams.toString()}`);
   }, [
-    searchQuery,
     doctorTypeName,
     departmentName,
     examinationRoomNumber,
@@ -202,26 +210,16 @@ export default function Doctor() {
     setPage(1);
   };
 
-  const handlePreviousPage = () => {
-    if (page > 1) {
-      setPage(page - 1);
-    }
-  };
+  // const handlePreviousPage = () => {
+  //   if (page > 1) {
+  //     setPage(page - 1);
+  //   }
+  // };
 
-  // if (isLoading) {
-  //   return <div>Loading...</div>;
-  // }
-  if (isError) {
-    return <div>Error! {error.message}</div>;
-  }
-  ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  //////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  //////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  //////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  //////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  
-  console.log(rooms);
+  // const handleNextPage = () => {
+  //   setPage(page + 1);
+  // };
+
   return (
     <Flex>
       <Box width="15%"></Box>
@@ -230,124 +228,164 @@ export default function Doctor() {
           margin="20px 0"
           textAlign="center"
           size="md"
+          npm
+          start
           color={colors.secondary}
         >
-          <Text as="span">Doctors</Text>
+          <Text mb="20px">Doctors</Text>
 
-          <DoctorSignUpModal initialData={selectedDoctor} />
+          <Button
+            color="green"
+            border="2px solid"
+            background="white"
+            onClick={() => navigate("/doctorRegister")}
+          >
+            Register Doctor
+          </Button>
         </Heading>
-        ///!!!!!
-        <Select
-          value={examinationRoomNumber}
-          onChange={(e) => setExaminationRoomNumber(e.target.value)}
-          placeholder="All Rooms"
-          marginTop="10px"
-          width="200px"
-        >
-          {rooms?.map((room) => (
-            <option key={room?.id} value={room?.roomNumber}>
-              {room?.roomNumber}
-            </option>
-          ))}
-        </Select>
-        <Select
-          value={departmentName}
-          onChange={(e) => setDepartmentName(e.target.value)}
-          placeholder="All Departments"
-          marginTop="10px"
-          width="200px"
-        >
-          {departments &&
-            departments?.departments?.map((department) => (
-              <option key={department.id} value={department.name}>
-                {department.name}
-              </option>
-            ))}
-        </Select>
-        <Select
-          value={doctorTypeName}
-          onChange={(e) => setDoctorTypeName(e.target.value)}
-          placeholder="All Types"
-          marginTop="10px"
-          width="200px"
-        >
-          {types &&
-            types?.types?.map((type) => (
-              <option key={type.id} value={type.name}>
-                {type.name}
-              </option>
-            ))}
-        </Select>
-        <Button onClick={handleResetAll} colorScheme="red" marginLeft="10px">
-          Reset All filters
-        </Button>
-        <InputGroup w="50%" margin="3rem auto">
-          <InputLeftElement pointerEvents="none">
-            <Search2Icon marginLeft={3} color="gray.600" />
-          </InputLeftElement>
-          <Input
-            autoFocus
-            borderRadius="20px"
-            type="search"
-            placeholder="Search by Doctor's Full Name"
-            value={searchQuery}
-            onChange={handleSearchChange}
-          />
-        </InputGroup>
-        <DoctorTable
-          doctors={doctors?.doctors}
-          handleUpdateClick={handleUpdateClick}
-          deleteDoctor={deleteDoctor}
-          page={page}
-          perPage={perPage}
-        />
-        {selectedDoctor && (
-          <UpdateDoctorModal
-            isOpen={!!selectedDoctor}
-            onClose={() => setselectedDoctor(null)}
-            doctor={selectedDoctor}
-          />
+        {doctorError ? (
+          <Text
+            margin="4rem 0"
+            padding="5rem"
+            color={colors.primary}
+            fontWeight="700"
+            fontSize="32px"
+            textAlign="center"
+            as="h2"
+          >
+            Something went wrong, please try again later
+          </Text>
+        ) : doctorLoading ? (
+          <Spinner1 />
+        ) : doctorsData?.docs?.length === 0 ? (
+          <Text
+            margin="4rem 0"
+            padding="5rem"
+            color={colors.primary}
+            fontWeight="700"
+            fontSize="32px"
+            textAlign="center"
+            as="h2"
+          >
+            No doctors
+          </Text>
+        ) : (
+          <>
+            <Box textAlign="center">
+              <Flex
+                gap="20px"
+                margin="0 auto"
+                justifyContent="center"
+                alignItems="center"
+              >
+                <Select
+                  value={examinationRoomNumber}
+                  onChange={(e) => setExaminationRoomNumber(e.target.value)}
+                  placeholder="All Rooms"
+                  marginTop="10px"
+                  width="200px"
+                  disabled={isLoadingRooms}
+                >
+                  {isLoadingRooms ? (
+                    <option>Loading rooms...</option>
+                  ) : (
+                    rooms?.map((room) => (
+                      <option key={room?.id} value={room?.roomNumber}>
+                        {room?.roomNumber}
+                      </option>
+                    ))
+                  )}
+                </Select>
+                <Select
+                  value={departmentName}
+                  onChange={(e) => setDepartmentName(e.target.value)}
+                  placeholder="All Departments"
+                  marginTop="10px"
+                  width="200px"
+                  disabled={isLoadingDepartments}
+                >
+                  {isLoadingDepartments ? (
+                    <option>Loading departments...</option>
+                  ) : (
+                    departments &&
+                    departments?.departments?.map((department) => (
+                      <option key={department?.id} value={department?.name}>
+                        {department?.name}
+                      </option>
+                    ))
+                  )}
+                </Select>
+                <Select
+                  value={doctorTypeName}
+                  onChange={(e) => setDoctorTypeName(e.target.value)}
+                  placeholder="All Types"
+                  marginTop="10px"
+                  width="200px"
+                  disabled={isLoadingTypes}
+                >
+                  {isLoadingTypes ? (
+                    <option>Loading types...</option>
+                  ) : (
+                    types?.types?.map((type) => (
+                      <option key={type?.id} value={type?.name}>
+                        {type?.name}
+                      </option>
+                    ))
+                  )}
+                </Select>
+              </Flex>
+              <Button
+                onClick={handleResetAll}
+                color={colors.primary}
+                border="2px solid"
+                background="white"
+                m="20px 0"
+              >
+                Reset All filters
+              </Button>
+              <InputGroup w="50%" margin="2rem auto">
+                <InputLeftElement pointerEvents="none">
+                  <Search2Icon marginLeft={3} color="gray.600" />
+                </InputLeftElement>
+                <Input
+                  borderRadius="20px"
+                  type="search"
+                  placeholder="Search by Doctor's Full Name"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  disabled={roomError || doctorLoading}
+                />
+              </InputGroup>
+            </Box>
+            <DoctorTable
+              setselectedDoctor={setSelectedDoctorDetail}
+              selectedDoctor={selectedDoctorDetail}
+              doctor={doctorsData?.doctors}
+              doctorsData={doctorsData}
+              handleUpdateClick={handleUpdateClick}
+              deleteDoctor={deleteDoctor}
+              page={page}
+              perPage={perPage}
+              role={role}
+            />
+
+            {selectedDoctor && (
+              <UpdateDoctorModal
+                isOpen={!!selectedDoctor}
+                onClose={() => setselectedDoctor(null)}
+                doctor={selectedDoctor}
+              />
+            )}
+            {doctorsData?.totalCount != 0 && (
+              <Pagination
+                totalCount={doctorsData?.totalCount}
+                perPage={perPage}
+                setPage={setPage}
+                page={page}
+              />
+            )}
+          </>
         )}
-        <ButtonGroup>
-          <Button
-            type="button"
-            onClick={handlePreviousPage}
-            isDisabled={page === 1}
-            _active={{
-              bg: "#dddfe2",
-              transform: "scale(0.98)",
-              borderColor: "#bec3c9",
-            }}
-            _focus={{
-              boxShadow:
-                "0 0 1px 2px rgba(88, 144, 255, .75), 0 1px 1px rgba(0, 0, 0, .15)",
-            }}
-          >
-            Previous Page
-          </Button>
-          <Button
-            type="button"
-            onClick={(e) => {
-              setPage((prevPage) => prevPage + 1);
-              e.preventDefault();
-            }}
-            isDisabled={
-              doctors?.totalCount < perPage * page ||
-              doctors?.totalCount === perPage * page
-            }
-            _active={{
-              bg: "#dddfe2",
-              transform: "scale(0.98)",
-              borderColor: "#bec3c9",
-            }}
-            _focus={{
-              boxShadow:
-                "0 0 1px 2px rgba(88, 144, 255, .75), 0 1px 1px rgba(0, 0, 0, .15)",
-            }}
-          >
-            Next Page
-          </Button>
-        </ButtonGroup>
       </Container>
     </Flex>
   );

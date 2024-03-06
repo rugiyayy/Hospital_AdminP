@@ -18,7 +18,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { colors } from "../components/Constants";
+import { Spinner1, colors } from "../components/Constants";
 import { httpClient } from "../utils/httpClient";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import DoctorTypeModal from "../components/doctorTypeModals/CreateDoctorTypeModal";
@@ -29,22 +29,26 @@ import CreateDepartmentModal from "../components/departmentModals/CreateDepartme
 import UpdateDepartmentModal from "../components/departmentModals/UpdateDepartmentModal";
 import { useLocation, useNavigate } from "react-router-dom";
 import { EmailIcon, Search2Icon } from "@chakra-ui/icons";
+import SentEmailDetailModal from "../components/SentEmailDetailModal";
+import Pagination from "../components/Pagination";
 
 export default function SentEmail() {
-  const { token } = useSelector((state) => state.account);
+  const { token, role } = useSelector((state) => state.account);
   const toast = useToast();
-  const [selectedDepartment, setselectedDepartment] = useState(null);
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(5);
+  const [selectedEmail, setSelectedEmail] = useState(null);
 
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchQuery, setSearchQuery] = useState("");
 
   const getSentEmails = async () => {
     const params = {
       page,
       perPage,
+      from: searchQuery,
     };
 
     const response = await httpClient.get("/email", {
@@ -56,6 +60,11 @@ export default function SentEmail() {
     return response.data;
   };
 
+  const handleSearchChange = (e) => {
+    e.preventDefault();
+    setSearchQuery(e.target.value);
+    setPage(1);
+  };
   //!
 
   const deleteSentEmails = useMutation(
@@ -98,9 +107,9 @@ export default function SentEmail() {
     isLoading,
     data: email,
     isError,
-    error,
-  } = useQuery(["sentEmails", page, perPage], getSentEmails, {
+  } = useQuery(["sentEmails", page, perPage, searchQuery], getSentEmails, {
     refetchOnWindowFocus: false,
+    keepPreviousData: true,
   });
 
   useEffect(() => {
@@ -118,18 +127,23 @@ export default function SentEmail() {
     navigate(`?${urlParams.toString()}`);
   }, [page, perPage, navigate]);
 
-  const handlePreviousPage = () => {
-    if (page > 1) {
-      setPage(page - 1);
-    }
-  };
+  // const handlePreviousPage = () => {
+  //   if (page > 1) {
+  //     setPage(page - 1);
+  //   }
+  // };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-  if (isError) {
-    return <div>Error! {error.message}</div>;
-  }
+  
+  // const handleNextPage = () => {
+  //   setPage(page + 1);
+  // };
+
+  // if (isLoading) {
+  //   return <div>Loading...</div>;
+  // }
+  // if (isError) {
+  //   return <div>Error! {error.message}</div>;
+  // }
 
   return (
     <Flex>
@@ -144,7 +158,7 @@ export default function SentEmail() {
           <Text as="span">Sent Emails</Text>
         </Heading>
 
-        {isError && (
+        {isError ? (
           <Text
             color={colors.primary}
             fontWeight="700"
@@ -155,89 +169,108 @@ export default function SentEmail() {
           >
             Something went wrong , please try again later
           </Text>
-        )}
-        {email?.totalCount > 0 && (
-          <Table w="90%" variant="simple" margin="50px auto ">
-            <Thead>
-              <Tr>
-                <Th></Th>
-                <Th textAlign="center">To</Th>
-                <Th textAlign="center">Subject</Th>
-                <Th textAlign="center">Message</Th>
-                <Th textAlign="center">Sent Time</Th>
-                <Th textAlign="end"></Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {email?.emails?.map((email, i) => (
-                <Tr key={email?.id}>
-                  <Td w="5%">{i + 1 + page * perPage - perPage}</Td>
-                  <Td w="20%">{email?.to}</Td>
-
-                  <Td w="20%" textAlign="center">
-                    {email?.subject}
-                  </Td>
-                  <Td w="30%" textAlign="center">
-                    {email?.body}
-                  </Td>
-
-                  <Td w="20%" textAlign="end">
-                    {email?.sentTime}
-                  </Td>
-                  <Td w="5%" textAlign="end">
-                    <Button
-                      onClick={() => deleteSentEmails.mutate(email?.id)}
-                      marginLeft="12px"
-                      color="red"
-                    >
-                      Delete
-                    </Button>
-                  </Td>
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        )}
-        <ButtonGroup>
-          <Button
-            type="button"
-            onClick={handlePreviousPage}
-            isDisabled={page === 1}
-            _active={{
-              bg: "#dddfe2",
-              transform: "scale(0.98)",
-              borderColor: "#bec3c9",
-            }}
-            _focus={{
-              boxShadow:
-                "0 0 1px 2px rgba(88, 144, 255, .75), 0 1px 1px rgba(0, 0, 0, .15)",
-            }}
+        ) : isLoading ? (
+          <Spinner1 />
+        ) : email?.totalCount === 0 && searchQuery === "" ? (
+          <Text
+            margin="4rem 0"
+            padding="5rem"
+            color={colors.primary}
+            fontWeight="700"
+            fontSize="32px"
+            textAlign="center"
+            as="h2"
           >
-            Previous Page
-          </Button>
-          <Button
-            type="button"
-            onClick={(e) => {
-              setPage((prevPage) => prevPage + 1);
-              e.preventDefault();
-            }}
-            isDisabled={
-              email?.totalCount < perPage * page ||
-              email?.totalCount === perPage * page
-            }
-            _active={{
-              bg: "#dddfe2",
-              transform: "scale(0.98)",
-              borderColor: "#bec3c9",
-            }}
-            _focus={{
-              boxShadow:
-                "0 0 1px 2px rgba(88, 144, 255, .75), 0 1px 1px rgba(0, 0, 0, .15)",
-            }}
-          >
-            Next Page
-          </Button>
-        </ButtonGroup>
+            No Sent Emails
+          </Text>
+        ) : (
+          <Box>
+            <InputGroup w="50%" margin="3rem auto">
+              <InputLeftElement pointerEvents="none">
+                <Search2Icon marginLeft={3} color="gray.600" />
+              </InputLeftElement>
+              <Input
+                autoFocus
+                borderRadius="20px"
+                type="search"
+                placeholder="Search by Email address"
+                value={searchQuery}
+                onChange={handleSearchChange}
+              />
+            </InputGroup>
+            {searchQuery !== "" && email?.totalCount === 0 && (
+              <Text
+                margin="4rem 0"
+                padding="5rem"
+                color={colors.primary}
+                fontWeight="700"
+                fontSize="32px"
+                textAlign="center"
+                as="h2"
+              >
+                No matching emails found
+              </Text>
+            )}
+            <Box height="60vh" margin="3rem 0">
+              {email?.totalCount > 0 && (
+                <Table w="90%" variant="simple" margin="50px auto ">
+                  <Thead>
+                    <Tr>
+                      <Th></Th>
+                      <Th textAlign="center">From</Th>
+                      <Th textAlign="center">Sent Date</Th>
+                      <Th textAlign="center">For more details</Th>
+                      <Th textAlign="end"></Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {email?.emails?.map((email, i) => (
+                      <Tr key={email?.id}>
+                        <Td w="5%">{i + 1 + page * perPage - perPage}</Td>
+
+                        <Td w="30%" textAlign="center">
+                          {email?.from}
+                        </Td>
+                        <Td w="25%" textAlign="center">
+                          {email?.sentTime}
+                        </Td>
+                        <Td
+                          w="25%"
+                          textAlign="center"
+                          onClick={() => setSelectedEmail(email)}
+                        >
+                          <Button>Get more</Button>
+                        </Td>
+
+                        <Td w="15%" textAlign="end">
+                          <Button
+                            onClick={() => deleteSentEmails.mutate(email?.id)}
+                            marginLeft="12px"
+                            color="red"
+                            isDisabled={role !== "Admin"}
+                          >
+                            Delete
+                          </Button>
+                        </Td>
+                      </Tr>
+                    ))}
+                    <SentEmailDetailModal
+                      isOpen={!!selectedEmail}
+                      onClose={() => setSelectedEmail(null)}
+                      email={selectedEmail}
+                    />
+                  </Tbody>
+                </Table>
+              )}
+            </Box>
+            <Pagination
+            totalCount={email?.totalCount}
+            perPage={perPage}
+            setPage={setPage}
+            page={page}
+          />
+          </Box>
+        )}
       </Container>
     </Flex>
   );

@@ -5,11 +5,12 @@ import { useMutation, useQueryClient } from "react-query";
 import { httpClient } from "../../utils/httpClient";
 import { useSelector } from "react-redux";
 import doctorRegisterSchema from "../../validations/doctorRegisterSchema";
+import { useNavigate } from "react-router-dom";
 
 export default function useSignUpDoctorModal() {
   const queryClient = useQueryClient();
   const { token } = useSelector((state) => state.account);
-
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
   const { isOpen, onOpen, onClose: _onClose } = useDisclosure();
@@ -45,6 +46,7 @@ export default function useSignUpDoctorModal() {
         formik.resetForm();
 
         setIsLoading(false);
+        navigate("/doctor");
       },
       onError: (error) => {
         if (
@@ -65,24 +67,24 @@ export default function useSignUpDoctorModal() {
           toast({
             title: "Error",
             description:
-              // error?.response?.data?.errors?.FullName ||
-              // error?.response?.data?.errors?.Password ||
-              // error?.response?.data?.errors?.Photo ||
-              // error?.response?.data?.errors?.DepartmentId ||
-              // error?.response?.data?.errors?.DoctorTypeId ||
-              // error?.response?.data?.errors?.Email ||
-              // error?.response?.data?.errors?.BirthDate ||
-              // error?.response?.data?.errors?.PhoneNumber ||
-              // error?.response?.data?.errors?.RoomNumber ||
-              // error?.response?.data?.errors?.EndTime ||
-              // error?.response?.data?.errors?.StartTime ||
-              // error?.response?.data ||
               errorMessage || "Something went wrong. Please try again later.",
             status: "error",
             duration: 4000,
             isClosable: true,
             position: "top-right",
           });
+        } else if (error?.response?.status === 401) {
+          console.log("error401:", error);
+
+          toast({
+            title: "Authorization Error",
+            description: "You are not authorized",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+            position: "top-right",
+          });
+          console.log(" if eldsfse error message :", error.response);
         } else {
           console.log(" if else error message :", error.response);
 
@@ -104,10 +106,7 @@ export default function useSignUpDoctorModal() {
     }
   );
   const onSubmit = (values) => {
-    // console.log("Form values:", values);
-
     formik.validateForm().then((errors) => {
-      console.log("Validation errors:", errors);
       if (Object.keys(errors).length === 0) {
         const formData = {
           FullName: values.fullName,
@@ -162,5 +161,5 @@ export default function useSignUpDoctorModal() {
     onSubmit: onSubmit,
   });
 
-  return { onOpen, isOpen, onClose, formik, isLoading };
+  return { formik, isLoading };
 }

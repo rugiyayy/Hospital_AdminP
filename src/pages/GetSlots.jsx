@@ -49,7 +49,7 @@ export default function GetSlots() {
             },
           }
         );
-        
+
         navigate(
           `/schedule?doctorId=${values.doctorId}&selectedDate=${values.selectedDate}`
         );
@@ -95,7 +95,7 @@ export default function GetSlots() {
   if (doctorLoading) {
     return <Spinner1 />;
   }
-console.log(doctor);
+  console.log(doctor);
   return (
     <Flex>
       <Box width="15%"></Box>
@@ -147,7 +147,7 @@ console.log(doctor);
               value={formik.values.selectedDate}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              min={tomorrow.toISOString().split("T")[0]}
+              min={new Date().toISOString().split("T")[0]}
               max={next30Days.toISOString().split("T")[0]}
             />
           </Flex>

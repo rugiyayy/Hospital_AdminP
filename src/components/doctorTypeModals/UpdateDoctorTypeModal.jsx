@@ -24,9 +24,6 @@ export default function UpdateDoctorTypeModal({ isOpen, onClose, type }) {
   const { token } = useSelector((state) => state.account);
   const { updateTypeDoctor } = useUpdateDoctorType(type.id, onClose);
 
-
-
-  
   const onSubmit = (values) => {
     formik.validateForm().then((errors) => {
       if (Object.keys(errors).length === 0) {
@@ -36,7 +33,6 @@ export default function UpdateDoctorTypeModal({ isOpen, onClose, type }) {
         };
         updateTypeDoctor.mutate(formData);
         // onClose();
-      
       }
     });
     // formik.resetForm();

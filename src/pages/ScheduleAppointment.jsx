@@ -39,7 +39,7 @@ export default function ScheduleAppointment() {
         _hover: {
           bg: colors.primary,
         },
-        transition: ".6s ease",
+        transition: ".2s ease",
         textTransform: "uppercase",
         letterSpacing: "1px",
       },
@@ -315,7 +315,14 @@ export default function ScheduleAppointment() {
                   <Button onClick={() => navigate(`/scheduleAppointment`)}>
                     Go Back to Previous Page
                   </Button>
-                  <Button onClick={formik.handleSubmit}>
+                  <Button
+                    isDisabled={
+                      selectedTime === null ||
+                      formik.errors.description ||
+                      formik.errors.patientId
+                    }
+                    onClick={formik.handleSubmit}
+                  >
                     Make Appointment
                   </Button>
                 </ButtonGroup>

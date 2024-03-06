@@ -83,6 +83,7 @@ export default function Appointments() {
     getAppointments,
     {
       refetchOnWindowFocus: false,
+      keepPreviousData: true,
     }
   );
 
@@ -238,7 +239,7 @@ export default function Appointments() {
 
             <Box width="20%" margin="0 60px ">
               <Select
-                 value={
+                value={
                   isActiveFilter === null
                     ? "all"
                     : isActiveFilter
@@ -248,11 +249,13 @@ export default function Appointments() {
                 onChange={(e) => {
                   setPage(1);
                   const selectedValue = e.target.value;
-                  if (selectedValue === "all") {
-                    setIsActiveFilter(null); 
-                  } else if (selectedValue==="active") {
-                    setIsActiveFilter(true); 
-                  }
+                  setIsActiveFilter(
+                    selectedValue === "all"
+                      ? null
+                      : selectedValue === "active"
+                      ? true
+                      : false
+                  );
                 }}
               >
                 <option value="all">All</option>
@@ -327,7 +330,7 @@ export default function Appointments() {
                         {appointment?.formattedStartTime}
                       </Td>
                       <Td width="10%" textAlign="center">
-                        {appointment?.doctor?.serviceCost}
+                        {appointment?.serviceCost}
                       </Td>
 
                       <Td

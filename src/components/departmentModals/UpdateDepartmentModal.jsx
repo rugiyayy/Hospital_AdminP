@@ -26,7 +26,7 @@ export default function UpdateDepartmentModal({ isOpen, onClose, department }) {
     const formData = {
       Name: values.name,
       DepartmentDescription: values.departmentDescription,
-      ServiceCost:values.serviceCost,
+      ServiceCost: values.serviceCost,
     };
     updateDepartment.mutate(formData);
     // onClose();
@@ -35,7 +35,7 @@ export default function UpdateDepartmentModal({ isOpen, onClose, department }) {
   const formik = useFormik({
     initialValues: {
       name: department.name,
-      serviceCost:department.serviceCost,
+      serviceCost: department.serviceCost,
       departmentDescription: department.departmentDescription,
     },
     validationSchema: departmentsSchema,
@@ -77,9 +77,12 @@ export default function UpdateDepartmentModal({ isOpen, onClose, department }) {
               pr="4.5rem"
               type="text"
             />
-            {formik.errors.departmentDescription && formik.touched.departmentDescription && (
-              <span style={{ color: "red" }}>{formik.errors.departmentDescription}</span>
-            )}
+            {formik.errors.departmentDescription &&
+              formik.touched.departmentDescription && (
+                <span style={{ color: "red" }}>
+                  {formik.errors.departmentDescription}
+                </span>
+              )}
           </FormControl>
 
           <FormControl mt={4}>

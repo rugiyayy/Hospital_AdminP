@@ -36,6 +36,8 @@ export default function CreateDoctorTypeModal() {
         fontSize="16px"
         marginLeft="16px"
         padding="0 3rem"
+        border="2px solid"
+        background="white"
       >
         Add
       </Button>

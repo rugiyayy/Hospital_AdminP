@@ -73,6 +73,18 @@ export default function useUpdateDoctor(doctorId, onSuccessCallback) {
             isClosable: true,
             position: "top-right",
           });
+        } else if (error?.response?.status === 401) {
+          console.log("error401:", error);
+
+          toast({
+            title: "Authorization Error",
+            description: "You are not authorized",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+            position: "top-right",
+          });
+          console.log(" if eldsfse error message :", error.response);
         } else {
           console.log(" if else error message :", error.response);
 
@@ -111,7 +123,6 @@ export default function useUpdateDoctor(doctorId, onSuccessCallback) {
       phoneNumber: "",
       email: "",
       photo: null,
-
     },
     validationSchema: updateDoctorSchema,
     onSubmit: onSubmit,

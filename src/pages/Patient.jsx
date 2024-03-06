@@ -18,7 +18,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { colors } from "../components/Constants";
+import { Spinner1, colors } from "../components/Constants";
 import { httpClient } from "../utils/httpClient";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useSelector } from "react-redux";
@@ -26,9 +26,11 @@ import SignPatientUpModal from "../components/patientModal/SignUpModal";
 import UpdatePatientModal from "../components/patientModal/UpdatePatientModal";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Search2Icon } from "@chakra-ui/icons";
+import Pagination from "../components/Pagination";
+import PatientDetailModal from "../components/PatientDetailModal";
 
 export default function Patient() {
-  const { token } = useSelector((state) => state.account);
+  const { token, role } = useSelector((state) => state.account);
   const toast = useToast();
   const queryClient = useQueryClient();
   const [selectedPatient, setselectedPatient] = useState(null);
@@ -37,6 +39,7 @@ export default function Patient() {
   const [perPage, setPerPage] = useState(5);
   const navigate = useNavigate();
   const location = useLocation();
+  const [selectedPatientDetails, setselectedPatientDetails] = useState(null);
 
   const getPatients = async () => {
     const params = {
@@ -55,21 +58,20 @@ export default function Patient() {
   };
   const {
     isLoading,
-    data: patients,
-    isError,
-    error,
+    data: patientsData,
+    error: patientError,
   } = useQuery(["patient", page, perPage, searchQuery], getPatients, {
     refetchOnWindowFocus: false,
+    keepPreviousData: true,
   });
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
-    urlParams.set("patientFullName", searchQuery.toString());
     urlParams.set("page", page.toString());
     urlParams.set("perPage", perPage.toString());
 
     navigate(`?${urlParams.toString()}`);
-  }, [searchQuery, page, perPage, navigate]);
+  }, [page, perPage, navigate]);
 
   const deletePatient = useMutation(
     (id) =>
@@ -116,23 +118,13 @@ export default function Patient() {
     setselectedPatient(patient);
   };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-  if (isError) {
-    return <div>Error! {error.message}</div>;
-  }
   const handleSearchChange = (e) => {
     e.preventDefault();
     setSearchQuery(e.target.value);
     setPage(1);
   };
-  const handlePreviousPage = () => {
-    if (page > 1) {
-      setPage(page - 1);
-    }
-  };
-  console.log(patients?.patients?.length);
+
+  console.log(patientsData?.patients?.length);
 
   return (
     <Flex>
@@ -144,133 +136,148 @@ export default function Patient() {
           size="md"
           color={colors.secondary}
         >
-          <Text as="span">Patients</Text>
+          <Text mb="20px">Patients</Text>
 
           <SignPatientUpModal initialData={selectedPatient} />
         </Heading>
 
-        <InputGroup w="50%" margin="3rem auto">
-          <InputLeftElement pointerEvents="none">
-            <Search2Icon marginLeft={3} color="gray.600" />
-          </InputLeftElement>
-          <Input
-            autoFocus
-            borderRadius="20px"
-            type="search"
-            placeholder="Search by Patients's Full Name"
-            value={searchQuery}
-            onChange={handleSearchChange}
-          />
-        </InputGroup>
+        {patientError ? (
+          <Text
+            margin="4rem 0"
+            padding="5rem"
+            color={colors.primary}
+            fontWeight="700"
+            fontSize="32px"
+            textAlign="center"
+            as="h2"
+          >
+            Something went wrong, please try again later
+          </Text>
+        ) : isLoading ? (
+          <Spinner1 />
+        ) : patientsData?.pDta?.length === 0 ? (
+          <Text
+            margin="4rem 0"
+            padding="5rem"
+            color={colors.primary}
+            fontWeight="700"
+            fontSize="32px"
+            textAlign="center"
+            as="h2"
+          >
+            No patients
+          </Text>
+        ) : (
+          <>
+            <InputGroup w="50%" margin="3rem auto">
+              <InputLeftElement pointerEvents="none">
+                <Search2Icon marginLeft={3} color="gray.600" />
+              </InputLeftElement>
+              <Input
+                borderRadius="20px"
+                type="search"
+                placeholder="Search by Patients's Full Name"
+                value={searchQuery}
+                onChange={handleSearchChange}
+              />
+            </InputGroup>
 
-        <Table w="90%" variant="simple" margin="50px auto ">
-          <Thead>
-            <Tr>
-              <Th></Th>
-              <Th>Patient Full Name </Th>
-              <Th textAlign="center">Phone Number</Th>
-              <Th textAlign="center">Email</Th>
-              <Th textAlign="center">Patient Identity Number</Th>
-              <Th textAlign="center">Birth Date</Th>
-              <Th textAlign="end"></Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {patients?.patients?.map((patient, i) => (
-              <Tr key={patient.id}>
-                <Td width="5%" border="1px solid red">
-                  {i + 1 + page * perPage - perPage}
-                </Td>
+            {patientsData?.patients?.length > 0 ? (
+              <Box h="65vh" margin="0 auto">
+                <Table w="80%" margin="50px auto">
+                  <Thead>
+                    <Tr>
+                      <Th></Th>
+                      <Th>Patient Full Name </Th>
+                      <Th textAlign="center">Email</Th>
+                      <Th textAlign="center">More Detais</Th>
+                      <Th textAlign="end"></Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {patientsData?.patients?.map((patient, i) => (
+                      <Tr key={patient.id}>
+                        <Td width="5%" >
+                          {i + 1 + page * perPage - perPage}
+                        </Td>
 
-                <Td width="20%" border="1px solid red">
-                  {patient?.fullName}
-                </Td>
-                <Td width="35%" border="1px solid red" textAlign="center">
-                  {patient?.phoneNumber}
-                </Td>
-                <Td width="20%" border="1px solid red" textAlign="center">
-                  {patient?.email}
-                </Td>
-                <Td width="20%" border="1px solid red" textAlign="center">
-                  {patient?.patientIdentityNumber}
-                </Td>
-                <Td width="20%" border="1px solid red" textAlign="center">
-                  {patient?.birthDate}
-                </Td>
+                        <Td width="25%" >
+                          {patient?.fullName}
+                        </Td>
+                        <Td
+                          width="25%"
+                          textAlign="center"
+                        >
+                          {patient?.email}
+                        </Td>
+                        <Td
+                          w="15%"
+                          textAlign="center"
+                          onClick={() => setselectedPatientDetails(patient)}
+                        >
+                          <Button>Get more</Button>
+                        </Td>
+                        <Td
+                          width="25%"
+                          gap="12px"
+                          textAlign="end"
+                          fontWeight="700"
+                        >
+                          <Button
+                            onClick={() => handleUpdateClick(patient)}
+                            color="Blue"
+                          >
+                            Update
+                          </Button>
+                          <Button
+                            onClick={() => deletePatient.mutate(patient.id)}
+                            marginLeft="12px"
+                            color="red"
+                            isDisabled={role !== "Admin"}
+                          >
+                            Delete
+                          </Button>
+                        </Td>
+                      </Tr>
+                    ))}
+                    <PatientDetailModal
+                      isOpen={!!selectedPatientDetails}
+                      onClose={() => setselectedPatientDetails(null)}
+                      patient={selectedPatientDetails}
+                    />
+                  </Tbody>
+                </Table>
+              </Box>
+            ) : (
+              <Text
+                w="100%"
+                color={colors.primary}
+                fontWeight="700"
+                fontSize="32px"
+                textAlign="center"
+              >
+                No Patients
+              </Text>
+            )}
 
-                <Td
-                  width="20%"
-                  border="1px solid red"
-                  gap="12px"
-                  textAlign="end"
-                  fontWeight="700"
-                >
-                  <Button
-                    onClick={() => handleUpdateClick(patient)}
-                    color="Blue"
-                  >
-                    Update
-                  </Button>
-                  <Button
-                    onClick={() => deletePatient.mutate(patient.id)}
-                    marginLeft="12px"
-                    color="red"
-                  >
-                    Delete
-                  </Button>
-                </Td>
-              </Tr>
-            ))}
-          </Tbody>
-        </Table>
-        {selectedPatient && (
-          <UpdatePatientModal
-            isOpen={!!selectedPatient}
-            onClose={() => setselectedPatient(null)}
-            patient={selectedPatient}
-          />
+            {selectedPatient && (
+              <UpdatePatientModal
+                isOpen={!!selectedPatient}
+                onClose={() => setselectedPatient(null)}
+                patient={selectedPatient}
+              />
+            )}
+
+            {patientsData?.totalCount != 0 && (
+              <Pagination
+                totalCount={patientsData?.totalCount}
+                perPage={perPage}
+                setPage={setPage}
+                page={page}
+              />
+            )}
+          </>
         )}
-
-        <ButtonGroup>
-          <Button
-            type="button"
-            onClick={handlePreviousPage}
-            isDisabled={page === 1}
-            _active={{
-              bg: "#dddfe2",
-              transform: "scale(0.98)",
-              borderColor: "#bec3c9",
-            }}
-            _focus={{
-              boxShadow:
-                "0 0 1px 2px rgba(88, 144, 255, .75), 0 1px 1px rgba(0, 0, 0, .15)",
-            }}
-          >
-            Previous Page
-          </Button>
-          <Button
-            type="button"
-            onClick={(e) => {
-              setPage((prevPage) => prevPage + 1);
-              e.preventDefault();
-            }}
-            isDisabled={
-              patients?.totalCount < perPage * page ||
-              patients?.totalCount === perPage * page
-            }
-            _active={{
-              bg: "#dddfe2",
-              transform: "scale(0.98)",
-              borderColor: "#bec3c9",
-            }}
-            _focus={{
-              boxShadow:
-                "0 0 1px 2px rgba(88, 144, 255, .75), 0 1px 1px rgba(0, 0, 0, .15)",
-            }}
-          >
-            Next Page
-          </Button>
-        </ButtonGroup>
       </Container>
     </Flex>
   );

@@ -6,6 +6,10 @@ const initialState = {
   token: null,
   userName: null,
   patientId: null,
+  doctorId:null,
+  role: null,
+
+
 };
 
 export const accountSlice = createSlice({
@@ -19,11 +23,23 @@ export const accountSlice = createSlice({
 
       state.token = token;
       state.userName = decodedToken.email; 
+      state.role = decodedToken.role; 
+
       const patientId = parseInt(decodedToken.PatientId);
       if (!isNaN(patientId)) { 
         state.patientId = patientId;}
+
+      const doctorId = parseInt(decodedToken.DoctorId);
+      if (!isNaN(doctorId)) { 
+        state.doctorId = doctorId;}
+
       console.log("Patient ID:",typeof decodedToken.PatientId, "parsed:", typeof patientId); //string
+      console.log("Doctor ID:",typeof decodedToken.DoctorId, "parsed:", typeof doctorId); //string
+      console.log("Doctor ID:", decodedToken.DoctorId); //string
+
+
       console.log("User logged in:", decodedToken.email);
+      console.log("Role:", decodedToken.role);
       console.log("Token:", token);
     },
     logoutAction: (state) => {
@@ -36,3 +52,4 @@ export const accountSlice = createSlice({
 export const { loginAction, logoutAction } = accountSlice.actions;
 
 export default accountSlice;
+// myDoc@mail.ru

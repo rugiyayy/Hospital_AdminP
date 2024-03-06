@@ -37,9 +37,11 @@ export default function SignUpModal(prop) {
         fontSize="16px"
         marginLeft="16px"
         padding="0 3rem"
+        border="2px solid"
+        background="white"
         onClick={onOpen}
       >
-        sign up pp{" "}
+        Register Patient
       </Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
@@ -59,7 +61,6 @@ export default function SignUpModal(prop) {
                 onBlur={formik.handleBlur}
                 name="fullName"
                 type="text"
-               
               />
               {formik.errors.fullName && formik.touched.fullName && (
                 <span style={{ color: "red" }}>{formik.errors.fullName}</span>
@@ -72,9 +73,9 @@ export default function SignUpModal(prop) {
                 <Input
                   onChange={formik.handleChange}
                   value={formik.values.phoneNumber}
+                  onBlur={formik.handleBlur}
                   name="phoneNumber"
                   type="tel"
-                
                 />
               </InputGroup>
               {formik.errors.phoneNumber && formik.touched.phoneNumber && (
@@ -89,6 +90,7 @@ export default function SignUpModal(prop) {
               <Input
                 onChange={formik.handleChange}
                 value={formik.values.email}
+                onBlur={formik.handleBlur}
                 name="email"
                 type="text"
               />
@@ -101,6 +103,7 @@ export default function SignUpModal(prop) {
               <Input
                 onChange={formik.handleChange}
                 value={formik.values.patientIdentityNumber}
+                onBlur={formik.handleBlur}
                 name="patientIdentityNumber"
                 type="text"
               />
@@ -115,6 +118,7 @@ export default function SignUpModal(prop) {
               <FormLabel>Birth Date</FormLabel>
               <Input
                 onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
                 value={formik.values.birthDate}
                 name="birthDate"
                 type="date"
@@ -131,6 +135,7 @@ export default function SignUpModal(prop) {
                 <Input
                   name="password"
                   onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
                   value={formik.values.password}
                   pr="4.5rem"
                   type={show ? "text" : "password"}

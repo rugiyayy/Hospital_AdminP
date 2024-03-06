@@ -33,7 +33,7 @@ export default function useUpdateDepartment(departmentId, onSuccessCallback) {
         queryClient.invalidateQueries("departments");
         onSuccessCallback();
       },
-       onError: (error) => {
+      onError: (error) => {
         if (
           error.response &&
           error.response?.data &&
@@ -58,9 +58,21 @@ export default function useUpdateDepartment(departmentId, onSuccessCallback) {
             isClosable: true,
             position: "top-right",
           });
+        } else if (error?.response?.status === 401) {
+          console.log("error401:", error);
+
+          toast({
+            title: "Authorization Error",
+            description: "You are not authorized",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+            position: "top-right",
+          });
+          console.log(" if eldsfse error message :", error.response);
         } else {
           console.log(" hello if else error message :", error.response.data);
-          
+
           toast({
             title: "Error",
             description:

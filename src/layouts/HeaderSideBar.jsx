@@ -10,6 +10,7 @@ import {
   useDisclosure,
   DrawerOverlay,
   useColorModeValue,
+  Button,
 } from "@chakra-ui/react";
 // Here we have used react-icons package for the icons
 import { FaBell } from "react-icons/fa";
@@ -19,20 +20,34 @@ import { AiOutlineTeam, AiOutlineHome } from "react-icons/ai";
 import { BsFolder2, BsCalendarCheck, BsFolder2Open } from "react-icons/bs";
 import { FiMenu } from "react-icons/fi";
 import { RiFlashlightFill } from "react-icons/ri";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHospital } from "@fortawesome/free-solid-svg-icons";
+import {
+  faAddressCard,
+  faCalendarCheck,
+  faFolderOpen,
+  faHospital,
+  faPaperPlane,
+  faPeopleGroup,
+  faPerson,
+  faUserPlus,
+} from "@fortawesome/free-solid-svg-icons";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutAction } from "../redux/slices/accountSlice";
+import { colors } from "../components/Constants";
 
 export default function HeaderSideBar() {
   const { isOpen, onClose, onOpen } = useDisclosure();
-
+  const navigate = useNavigate();
+  const { userName, role } = useSelector((x) => x.account);
+  const dispatch = useDispatch();
   return (
-    <Box
-      as="section"
-      //   bg={useColorModeValue("gray.50", "gray.700")}
-      //   minH="100vh"
-    >
-      <SidebarContent display={{ base: "none", md: "unset" }} />
+    <Box as="section">
+      <SidebarContent
+        userName={userName}
+        role={role}
+        display={{ base: "none", md: "unset" }}
+      />
       <Drawer w isOpen={isOpen} onClose={onClose} placement="left">
         <DrawerOverlay />
         <DrawerContent>
@@ -41,7 +56,6 @@ export default function HeaderSideBar() {
       </Drawer>
       <Box ml={{ base: 0, md: 60 }} transition=".3s ease">
         <Flex
-          border="1px solid red"
           as="header"
           align="center"
           justifyContent={{ base: "space-between", md: "flex-end" }}
@@ -60,16 +74,22 @@ export default function HeaderSideBar() {
             icon={<FiMenu />}
             size="md"
           />
-
           <Flex align="center">
-            <Icon color="gray.500" as={FaBell} cursor="pointer" />
             <Avatar
-              ml="4"
               size="sm"
-              name="Ahmad"
               src="https://avatars2.githubusercontent.com/u/37842853?v=4"
               cursor="pointer"
             />
+            {userName ? (
+              <>
+                <Text m="0 12px">{userName}</Text>
+                <Button onClick={() => dispatch(logoutAction())}>
+                  Log Out
+                </Button>
+              </>
+            ) : (
+              navigate("/signIn")
+            )}
           </Flex>
         </Flex>
       </Box>
@@ -77,7 +97,7 @@ export default function HeaderSideBar() {
   );
 }
 
-const SidebarContent = ({ ...props }) => (
+const SidebarContent = ({ userName, role, ...props }) => (
   <Box
     as="nav"
     pos="fixed"
@@ -94,8 +114,8 @@ const SidebarContent = ({ ...props }) => (
     w="60"
     {...props}
   >
-    <Flex  px="4" py="10" align="center">
-    <FontAwesomeIcon fontSize="36px" icon={faHospital} />
+    <Flex px="4" py="10" align="center">
+      <FontAwesomeIcon fontSize="36px" icon={faHospital} />
       <Text
         fontSize="2xl"
         ml="2"
@@ -113,18 +133,39 @@ const SidebarContent = ({ ...props }) => (
       aria-label="Main Navigation"
     >
       <NavItem icon={AiOutlineHome}>Dashboard</NavItem>
-      <NavItem icon={AiOutlineTeam}>Team</NavItem>
-      <NavItem icon={BsFolder2Open}>Projects</NavItem>
 
-      <NavLink to="/">
+      <NavLink to="/team">
         <NavItem>
-          <FaUserDoctor />
-          +Doctors
+          <FontAwesomeIcon color={colors.paragraph} icon={faPeopleGroup} />
+          <Text ml="20px">Team</Text>
+        </NavItem>
+      </NavLink>
+      {userName && role === "Admin" && (
+        <NavLink to="/register">
+          <NavItem>
+            <FontAwesomeIcon color={colors.paragraph} icon={faAddressCard} />
+            <Text ml="20px"> Register User</Text>
+          </NavItem>
+        </NavLink>
+      )}
+      <NavLink to="/doctor">
+        <NavItem>
+          <FaUserDoctor color={colors.paragraph} />
+          <Text ml="20px">Doctors</Text>
+        </NavItem>
+      </NavLink>
+      <NavLink to="/doctorRegister">
+        <NavItem>
+          <FontAwesomeIcon color={colors.paragraph} icon={faUserPlus} />
+          <Text ml="18px">Doctor Register</Text>
         </NavItem>
       </NavLink>
 
       <NavLink to="/patient">
-        <NavItem icon={BsFolder2}>+Patients</NavItem>
+        <NavItem>
+          <FontAwesomeIcon color={colors.paragraph} icon={faPerson} />
+          <Text ml="28px">Patients</Text>
+        </NavItem>
       </NavLink>
 
       <NavLink to="/scheduleAppointment">
@@ -132,26 +173,33 @@ const SidebarContent = ({ ...props }) => (
       </NavLink>
 
       <NavLink to="/allAppointments">
-        <NavItem icon={BsFolder2}>+All Appointments</NavItem>
+        <NavItem>
+          <FontAwesomeIcon color={colors.paragraph} icon={faCalendarCheck} />
+          <Text ml="28px"> All Appointments</Text>
+        </NavItem>
       </NavLink>
 
       <NavLink to="/department">
-        <NavItem icon={BsFolder2}>+Departments</NavItem>
+        <NavItem>
+          <FontAwesomeIcon color={colors.paragraph} icon={faFolderOpen} />{" "}
+          <Text ml="20px"> Departments</Text>
+        </NavItem>
       </NavLink>
 
       <NavLink to="/doctorType">
-        <NavItem icon={BsFolder2}>+Doctor Type</NavItem>
-      </NavLink>
-      <NavLink to="/sentEmail">
-        <NavItem icon={BsFolder2}>+Sent Emails</NavItem>
-      </NavLink>
-      
-      <NavLink to="/register">
         <NavItem>
-          <FaRegRegistered /> Register Page
+          <FontAwesomeIcon color={colors.paragraph} icon={faFolderOpen} />
+
+          <Text ml="20px"> Doctor Type</Text>
         </NavItem>
       </NavLink>
-      {/* <NavItem icon={BsCalendarCheck}>Calendar</NavItem> */}
+      <NavLink to="/sentEmail">
+        <NavItem>
+          <FontAwesomeIcon color={colors.paragraph} icon={faPaperPlane} />
+
+          <Text ml="20px"> Sent Emails</Text>
+        </NavItem>
+      </NavLink>
     </Flex>
   </Box>
 );

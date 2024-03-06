@@ -4,11 +4,14 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { httpClient } from "../utils/httpClient";
 import registerSchema from "../validations/registerSchema";
+import { useNavigate } from "react-router-dom";
 
 export default function useSignUp() {
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const { token } = useSelector((state) => state.account);
 
   const formik = useFormik({
@@ -25,9 +28,7 @@ export default function useSignUp() {
     },
     validationSchema: registerSchema,
   });
-  const onClose = () => {
-    formik.resetForm();
-  };
+
 
   const registerQuery = async (values) => {
     try {
@@ -45,9 +46,8 @@ export default function useSignUp() {
         isClosable: true,
         position: "top-right",
       });
+      navigate("/team")
 
-      // onClose();
-      formik.resetForm();
     } catch (error) {
       console.log("errors4:", error?.response?.data?.errors?.Email);
       if (
@@ -74,6 +74,18 @@ export default function useSignUp() {
           isClosable: true,
           position: "top-right",
         });
+      } else if (error?.response?.status === 401) {
+        console.log("error401:", error);
+
+        toast({
+          title: "Authorization Error",
+          description: "You are not authorized",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+          position: "top-right",
+        });
+        console.log(" if eldsfse error message :", error.response);
       } else {
         console.log(" if else error message :", error.response);
 

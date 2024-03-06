@@ -12,6 +12,12 @@ import Patient from "./pages/Patient";
 import Doctor from "./pages/Doctor";
 import SenEmail from "./pages/SentEmail";
 import SentEmail from "./pages/SentEmail";
+import SignIn from "./pages/SignIn";
+import { ProtectedRoute, ProtectedRouteAdmin } from "./utils/ProtectedRoute";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import Team from "./pages/Team";
+import DoctorRegister from "./pages/DoctorRegister";
 
 function App() {
   return (
@@ -19,30 +25,108 @@ function App() {
       <Router>
         <Routes>
           <Route element={<Layout />}>
-            <Route path="/register" element={<RegisterRole />} />
+            <Route
+              path="/register"
+              element={
+                <ProtectedRouteAdmin>
+                  <RegisterRole />
+                </ProtectedRouteAdmin>
+              }
+            />
+             <Route
+              path="/doctorRegister"
+              element={
+                <ProtectedRouteAdmin>
+                <DoctorRegister/>
+                </ProtectedRouteAdmin>
+              }
+            />
 
-            <Route path="/doctorType" element={<DoctorType />} />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Doctor />
+                </ProtectedRoute>
+              }
+            />
 
+            <Route
+              path="/patient"
+              element={
+                <ProtectedRoute>
+                  <Patient />
+                </ProtectedRoute>
+              }
+            />
 
-            <Route path="/" element={<Doctor/>} />
+            <Route
+              path="/schedule"
+              element={
+                <ProtectedRoute>
+                  <ScheduleAppointment />
+                </ProtectedRoute>
+              }
+            />
 
-            <Route path="/patient" element={<Patient/>} />
+            <Route
+              path="/team"
+              element={
+                <ProtectedRoute>
+                  <Team />
+                </ProtectedRoute>
+              }
+            />
 
+            <Route
+              path="/scheduleAppointment"
+              element={
+                <ProtectedRoute>
+                  <GetSlots />
+                </ProtectedRoute>
+              }
+            />
 
-             <Route path="/schedule" element={<ScheduleAppointment/>} />
+            <Route
+              path="/allAppointments"
+              element={
+                <ProtectedRoute>
+                  <Appointments />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/doctorType"
+              element={
+                <ProtectedRoute>
+                  <DoctorType />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/department"
+              element={
+                <ProtectedRoute>
+                  <Department />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/sentEmail"
+              element={
+                <ProtectedRoute>
+                  <SentEmail />
+                </ProtectedRoute>
+              }
+            />
 
-            <Route path="/scheduleAppointment" element={<GetSlots />} />
-
-
-            <Route path="/allAppointments" element={<Appointments />} />
-            <Route path="/doctorType" element={<DoctorType />} />
-            <Route path="/department" element={<Department />} />
-            <Route path="/sentEmail" element={<SentEmail />} />
-
-
-            
-
+            <Route path="/*" element={<Doctor />} />
+            {/* //!!  not found sozday pls */}
           </Route>
+          <Route path="/forgotPassword" element={<ForgotPassword />} />
+          <Route path="/resetPassword" element={<ResetPassword />} />
+
+          <Route path="/signIn" element={<SignIn />} />
         </Routes>
       </Router>
     </ChakraProvider>
