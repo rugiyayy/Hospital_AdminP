@@ -130,7 +130,7 @@ const ForgotPassword = () => {
             <Input
               fontSize="sm"
               ms="4px"
-              placeholder="Your full name"
+              placeholder="email.com/az/ru"
               size="lg"
               width="98%"
               border="1px"

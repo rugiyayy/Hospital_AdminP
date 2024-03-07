@@ -49,7 +49,7 @@ export default function UpdateDoctorModal({ isOpen, onClose, doctor }) {
         console.log(doctor);
 
         updateDoctor.mutate(formData);
-        // onClose();
+        onClose();
       }
     });
   };

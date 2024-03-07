@@ -78,14 +78,14 @@ function App() {
               }
             />
 
-            <Route
+            {/* <Route
               path="/scheduleAppointment"
               element={
                 <ProtectedRoute>
                   <GetSlots />
                 </ProtectedRoute>
               }
-            />
+            /> */}
 
             <Route
               path="/allAppointments"

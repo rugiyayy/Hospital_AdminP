@@ -92,6 +92,32 @@ export default function GetSlots() {
     refetchOnWindowFocus: false,
   });
 
+
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredDoctors, setFilteredDoctors] = useState([]);
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+    const filtered = doctor?.data?.doctors?.filter((doctor) =>
+    doctor.fullName.toLowerCase().includes(event.target.value.toLowerCase())
+    );
+    setFilteredDoctors(filtered);
+  };
+
+  const handleSelectDoctor = (doctor) => {
+    setSelectedDoctor(doctor);
+    setFilteredDoctors([]);
+    setSearchQuery(doctor.fullName);
+    formik.setFieldValue("doctorId", doctor.id);
+  };
+
+ 
+
+
+
+
   if (doctorLoading) {
     return <Spinner1 />;
   }
@@ -101,6 +127,48 @@ export default function GetSlots() {
       <Box width="15%"></Box>
       <Container maxW="85%">
         {" "}
+
+
+        <FormControl gap="20px">
+                  <Flex justifyContent="space-between">
+                    {formik.errors.doctorId && formik.touched.doctorId && (
+                      <Text color="red" width="58%">
+                        {formik.errors.doctorId}
+                      </Text>
+                    )}
+                  </Flex>
+                  <Flex
+                    alignItems="center"
+                    margin="20px 0 50px"
+                    justifyContent="space-between"
+                  >
+                    //!
+                    <FormControl gap="20px">
+                      <Input
+                        placeholder="Search doctor by Name"
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                      />
+                      {filteredDoctors.length > 0 && (
+                        <Box maxHeight="200px" overflowY="auto">
+                          {filteredDoctors.map((doctor, index) => (
+                            <Button
+                              key={index}
+                              variant="outline"
+                              onClick={() => handleSelectDoctor(doctor)}
+                              width="100%"
+                              textAlign="left"
+                            >
+                              {doctor.fullName}
+                            </Button>
+                          ))}
+                        </Box>
+                      )}
+                    </FormControl>
+                    //!!
+                  </Flex>
+                </FormControl>
+
         <FormControl gap="20px">
           <Flex justifyContent="space-between">
             {formik.errors.doctorId && formik.touched.doctorId && (
@@ -119,25 +187,6 @@ export default function GetSlots() {
             margin="20px 0 50px"
             justifyContent="space-between"
           >
-            <Select
-              width="58%"
-              ref={selectRef}
-              name="doctorId"
-              value={formik.values.doctorId}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            >
-              <option selected disabled value="default">
-                Select Doctor
-              </option>
-              {doctor?.data?.doctors?.map((x, i) => {
-                return (
-                  <option key={i} value={x.id}>
-                    {x.fullName}
-                  </option>
-                );
-              })}
-            </Select>
 
             <Input
               w="38%"

@@ -1,4 +1,5 @@
 import {
+  useColorModeValue,
   Box,
   Button,
   ButtonGroup,
@@ -15,6 +16,7 @@ import {
   VStack,
   extendTheme,
   useToast,
+  Center,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
 import React, { useState } from "react";
@@ -45,6 +47,7 @@ export default function ScheduleAppointment() {
       },
     },
   });
+  const bgColor = useColorModeValue("white", "gray.700");
   const { token } = useSelector((state) => state.account);
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -99,7 +102,7 @@ export default function ScheduleAppointment() {
           isClosable: true,
           position: "top-right",
         });
-        navigate(`/scheduleAppointment`);
+        navigate(`/allAppointments`);
       },
       onError: (error) => {
         console.error("Error creating appointment:", error);
@@ -202,134 +205,179 @@ export default function ScheduleAppointment() {
   return (
     <Flex>
       <Box width="15%"></Box>
-      <Container maxW="85%">
-        <Box>
-          <Flex w="100%" justifyContent="space-between" alignItems="center">
-            <Flex width="45%" flexWrap="wrap" gap="8px">
-              <VStack>
-                {isDoctorLoading && <p>Loading doctor information...</p>}
-                {doctorError && (
-                  <p>
-                    Error fetching doctor information: {doctorError.message}
-                  </p>
-                )}
-                {doctorData && <Text>{`Doctor: ${doctorData}`}</Text>}
-                {timeSlotLoading && <p>Loading...</p>}
-                {timeSlotError && <p>Error: {timeSlotError.message}</p>}
-                {timeSlot && (
-                  <Text>{`Available time slots for ${selectedDate}:`}</Text>
-                )}
-              </VStack>
-              <SimpleGrid templateColumns="repeat(4, 4fr)" gap="20px">
-                {timeSlot?.data?.map((time, i) => (
-                  <GridItem w="105px">
-                    <Button
-                      w="100%"
-                      key={i}
-                      style={{
-                        backgroundColor:
-                          selectedTime === time
-                            ? colors.primary
-                            : colors.secondary,
-                      }}
-                      gap="10px"
-                      name="startTime"
-                      justifyContent="center"
-                      alignItems="center"
-                      sx={theme.textStyles.a}
-                      onClick={() => handleSelectTime(time)}
-                    >
-                      <Text> {time}</Text>
-                    </Button>
-                  </GridItem>
-                ))}
-              </SimpleGrid>
-              {timeSlotLoading && <p>Loading...</p>} {/* potom napishu */}
-              {timeSlotError && <p>Error: {timeSlotError.message}</p>}
-            </Flex>
 
+      <Container
+        maxW="85%"
+        padding="2rem 0"
+        style={{
+          background: `url(${require("../assets/img/img/bg2.avif")}) `,
+        }}
+        mt="2rem"
+      >
+        <Center>
+          <Box bg={bgColor} rounded="lg" w="50%" p={{ base: 5, sm: 10 }}>
             <Flex
-              border="1px solid red"
-              width="45%"
-              flexDirection="column"
-              gap="40px"
+              w="100%"
+              border="4px solid grey"
+              flexDir="column"
+              justifyContent="space-between"
+              alignItems="center"
             >
-              <Text>Choose One Available date</Text>
-              <FormControl gap="20px">
-                <FormLabel>
-                  write about your symptoms or another thing{" "}
-                </FormLabel>
-                <Textarea
-                  placeholder="checkup..."
-                  value={formik.values.description}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  name="description"
-                  maxLength={29}
-                />
-
-                {formik.touched.description && formik.errors.description ? (
-                  <div>{formik.errors.description}</div>
-                ) : null}
-                <FormControl gap="20px">
-                  <Flex justifyContent="space-between">
-                    {formik.errors.patientId && formik.touched.patientId && (
-                      <Text color="red" width="58%">
-                        {formik.errors.patientId}
+              <Flex
+                justifyContent="center"
+                alignItems="center"
+                flexWrap="wrap"
+                gap="8px"
+              >
+                <VStack>
+                  {isDoctorLoading && <p>Loading doctor information...</p>}
+                  {doctorError && (
+                    <p>
+                      Error fetching doctor information: {doctorError.message}
+                    </p>
+                  )}
+                  {doctorData && (
+                    <Text
+                      fontSize="18px"
+                      fontWeight="600"
+                      color={colors.secondary}
+                    >
+                      Doctor:
+                      <Text padding="0 20px" color={colors.primary} as="span">
+                        {doctorData}
                       </Text>
-                    )}
-                  </Flex>
-                  <Flex
-                    alignItems="center"
-                    margin="20px 0 50px"
-                    justifyContent="space-between"
-                  >
-                    //!
-                    <FormControl gap="20px">
-                      <Input
-                        placeholder="Search Patients by Name"
-                        value={searchQuery}
-                        onChange={handleSearchChange}
-                      />
-                      {filteredPatients.length > 0 && (
-                        <Box maxHeight="200px" overflowY="auto">
-                          {filteredPatients.map((patient, index) => (
-                            <Button
-                              key={index}
-                              variant="outline"
-                              onClick={() => handleSelectPatient(patient)}
-                              width="100%"
-                              textAlign="left"
-                            >
-                              {patient.fullName}
-                            </Button>
-                          ))}
-                        </Box>
+                    </Text>
+                  )}
+                  {timeSlotLoading && <p>Loading...</p>}
+                  {timeSlotError && <p>Error: {timeSlotError.message}</p>}
+                  {timeSlot && (
+                    <Text
+                      fontSize="18px"
+                      margin="0 28px "
+                      fontWeight="600"
+                      color={colors.secondary}
+                    >
+                      Available time slots for
+                      <Text padding="0 20px" color={colors.primary} as="span">
+                        {selectedDate} :
+                      </Text>
+                    </Text>
+                  )}
+                </VStack>
+                <SimpleGrid
+                  margin="20px"
+                  border="5px solid red"
+                  templateColumns="repeat(4, 4fr)"
+                  gap="20px"
+                >
+                  {timeSlot?.data?.map((time, i) => (
+                    <GridItem w="105px">
+                      <Button
+                        w="100%"
+                        key={i}
+                        style={{
+                          backgroundColor:
+                            selectedTime === time
+                              ? colors.primary
+                              : colors.secondary,
+                        }}
+                        gap="10px"
+                        name="startTime"
+                        justifyContent="center"
+                        alignItems="center"
+                        sx={theme.textStyles.a}
+                        onClick={() => handleSelectTime(time)}
+                      >
+                        <Text> {time}</Text>
+                      </Button>
+                    </GridItem>
+                  ))}
+                </SimpleGrid>
+                {timeSlotLoading && <p>Loading...</p>} {/* potom napishu */}
+                {timeSlotError && <p>Error: {timeSlotError.message}</p>}
+              </Flex>
+
+              <Flex
+                flexDirection="column"
+                // gap="40px"
+                w="88%"
+                p="20px"
+                border="4px solid red"
+              >
+                <FormControl gap="20px">
+                  <FormLabel>Appointment description(details) :</FormLabel>
+                  <Textarea
+                    placeholder="Checkup..."
+                    value={formik.values.description}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    name="description"
+                    maxLength={29}
+                  />
+
+                  {formik.touched.description && formik.errors.description && (
+                    <Text ms={2} color="red" width="58%">
+                      {formik.errors.description}
+                    </Text>
+                  )}
+                  <FormControl gap="20px">
+                    <Flex justifyContent="space-between">
+                      {formik.errors.patientId && formik.touched.patientId && (
+                        <Text color="red" width="58%">
+                          {formik.errors.patientId}
+                        </Text>
                       )}
-                    </FormControl>
-                    //!!
-                  </Flex>
+                    </Flex>
+                    <Flex
+                      alignItems="center"
+                      margin="20px 0 50px"
+                      justifyContent="space-between"
+                    >
+                      <FormControl gap="20px">
+                        <Input
+                          placeholder="Enterthe Patient's full name"
+                          value={searchQuery}
+                          onChange={handleSearchChange}
+                        />
+                        {filteredPatients.length > 0 && (
+                          <Box maxHeight="150px" overflowY="auto">
+                            {filteredPatients.map((patient, index) => (
+                              <Button
+                                key={index}
+                                variant="outline"
+                                onClick={() => handleSelectPatient(patient)}
+                                width="100%"
+                                textAlign="left"
+                              >
+                                {patient.fullName}
+                              </Button>
+                            ))}
+                          </Box>
+                        )}
+                      </FormControl>
+                    </Flex>
+                  </FormControl>
+                  <ButtonGroup margin="20px 0 0">
+                    {" "}
+                    <Button onClick={() => navigate(`/allAppointments`)}>
+                      Go Back to Previous Page
+                    </Button>
+                    <Button
+                      isDisabled={
+                        selectedTime === null ||
+                        formik.errors.description ||
+                        formik.errors.patientId
+                      }
+                      onClick={formik.handleSubmit}
+                    >
+                      Make Appointment
+                    </Button>
+                  </ButtonGroup>
                 </FormControl>
-                <ButtonGroup margin="20px 0 0">
-                  {" "}
-                  <Button onClick={() => navigate(`/scheduleAppointment`)}>
-                    Go Back to Previous Page
-                  </Button>
-                  <Button
-                    isDisabled={
-                      selectedTime === null ||
-                      formik.errors.description ||
-                      formik.errors.patientId
-                    }
-                    onClick={formik.handleSubmit}
-                  >
-                    Make Appointment
-                  </Button>
-                </ButtonGroup>
-              </FormControl>
+              </Flex>
             </Flex>
-          </Flex>
-        </Box>
+          </Box>
+        </Center>
       </Container>
     </Flex>
   );

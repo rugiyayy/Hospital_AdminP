@@ -168,10 +168,6 @@ const SidebarContent = ({ userName, role, ...props }) => (
         </NavItem>
       </NavLink>
 
-      <NavLink to="/scheduleAppointment">
-        <NavItem icon={BsFolder2}>+Schedule Appointment</NavItem>
-      </NavLink>
-
       <NavLink to="/allAppointments">
         <NavItem>
           <FontAwesomeIcon color={colors.paragraph} icon={faCalendarCheck} />
