@@ -218,7 +218,6 @@ export default function ScheduleAppointment() {
           <Box bg={bgColor} rounded="lg" w="50%" p={{ base: 5, sm: 10 }}>
             <Flex
               w="100%"
-              border="4px solid grey"
               flexDir="column"
               justifyContent="space-between"
               alignItems="center"
@@ -266,7 +265,6 @@ export default function ScheduleAppointment() {
                 </VStack>
                 <SimpleGrid
                   margin="20px"
-                  border="5px solid red"
                   templateColumns="repeat(4, 4fr)"
                   gap="20px"
                 >
@@ -302,7 +300,6 @@ export default function ScheduleAppointment() {
                 // gap="40px"
                 w="88%"
                 p="20px"
-                border="4px solid red"
               >
                 <FormControl gap="20px">
                   <FormLabel>Appointment description(details) :</FormLabel>

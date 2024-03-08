@@ -45,7 +45,7 @@ export default function useSignUpDoctorModal() {
         });
         formik.resetForm();
 
-        setIsLoading(false);
+        setIsLoading(true);
         navigate("/doctor");
       },
       onError: (error) => {

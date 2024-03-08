@@ -88,11 +88,6 @@ export default function CreateDoctorTypeModal() {
           <ModalFooter margin="0 auto 12px">
             <Button
               padding="0 32px "
-              //   background="green"
-              //   _hover={{ backgroundColor: "green.500" }}
-              //   colorScheme="blue"
-              //   isLoading={isLoading}
-              //   onClick={formik.handleSubmit}
               isLoading={isLoading}
               onClick={formik.handleSubmit}
               colorScheme="green"

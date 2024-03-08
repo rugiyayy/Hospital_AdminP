@@ -14,7 +14,17 @@ const doctorRegisterSchema = Yup.object().shape({
     
     phoneNumber: Yup.string().required("Phone Number is required"),
     email: Yup.string().email("Invalid email").required("Email is required"),
-    birthDate: Yup.date().required("Birth Date is required"),
+    birthDate: Yup.date()
+    .max(new Date(), "Birth Date cannot be in the future")
+    .required("Birth Date is required")
+    .test("age", "User must be at least 25 years old", function(value) {
+      const currentDate = new Date();
+      const userDate = new Date(value);
+      const userAge = currentDate.getFullYear() - userDate.getFullYear();
+      const isUnder25 = userAge < 24;
+      return !isUnder25;
+    }),
+
 
     startTime: Yup.string().required("Start Time is required"),
     endTime: Yup.string().required("End Time is required"),

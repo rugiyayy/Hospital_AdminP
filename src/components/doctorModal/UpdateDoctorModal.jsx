@@ -25,16 +25,7 @@ import updateDoctorSchema from "../../validations/updateDoctorSchema";
 import { useDropzone } from "react-dropzone";
 
 export default function UpdateDoctorModal({ isOpen, onClose, doctor }) {
-  const { token } = useSelector((state) => state.account);
   const { updateDoctor } = useUpdateDoctor(doctor.id, onClose);
-  const [selectedImage, setSelectedImage] = useState(null);
-  const handleImageChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setSelectedImage(URL.createObjectURL(file));
-      formik.setFieldValue("photo", file);
-    }
-  };
 
   const onSubmit = (values) => {
     formik.validateForm().then((errors) => {
@@ -44,7 +35,6 @@ export default function UpdateDoctorModal({ isOpen, onClose, doctor }) {
             PhoneNumber: values.doctorDetail.phoneNumber,
             Email: values.doctorDetail.email,
           },
-          Photo: values.photo,
         };
         console.log(doctor);
 
@@ -59,19 +49,11 @@ export default function UpdateDoctorModal({ isOpen, onClose, doctor }) {
         phoneNumber: doctor.doctorDetail.phoneNumber,
         email: doctor.doctorDetail.email,
       },
-      photo: doctor.photo,
-
     },
 
     validationSchema: updateDoctorSchema,
     onSubmit: onSubmit,
   });
-  // const { getRootProps, getInputProps } = useDropzone({
-  //   accept: "image/*",
-  //   onDrop: (acceptedFiles) => {
-  //     formik.setFieldValue("photo", acceptedFiles[0]); // Store the first accepted file
-  //   },
-  // });
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -118,42 +100,6 @@ export default function UpdateDoctorModal({ isOpen, onClose, doctor }) {
                 </span>
               )}
           </FormControl>
-          <FormControl mt={4}>
-            <FormLabel>Photo</FormLabel>
-            <Input
-              onChange={handleImageChange}
-              accept="image/*"
-              onBlur={formik.handleBlur}
-              name="photo"
-              type="file"
-            />{" "}
-            {selectedImage && (
-              <Box mt={2}>
-                <img
-                  src={selectedImage}
-                  alt="Selected"
-                  style={{ maxWidth: "100%", height: "auto" }}
-                />
-              </Box>
-            )}
-            {formik.errors.photo && formik.touched.photo && (
-              <span style={{ color: "red" }}>{formik.errors.photo}</span>
-            )}
-          </FormControl>
-
-          {/* <FormControl mt={4}>
-            <FormLabel>Photo</FormLabel>
-            <Box {...getRootProps()} borderWidth="2px" p="20px" cursor="pointer">
-              <input {...getInputProps()} />
-              <Text>Drag 'n' drop or click to select a photo</Text>
-            </Box>
-            {formik.touched.photo && formik.errors.photo && (
-              <span style={{ color: "red" }}>{formik.errors.photo}</span>
-            )}
-            {formik.values.photo && formik.values.photo instanceof File && (
-              <img src={URL.createObjectURL(formik.values.photo)} alt="Doctor's photo" style={{ marginTop: '10px', maxWidth: '200px' }} />
-            )}
-          </FormControl> */}
         </ModalBody>
 
         <ModalFooter margin="0 auto 12px">

@@ -36,9 +36,9 @@ function App() {
              <Route
               path="/doctorRegister"
               element={
-                <ProtectedRouteAdmin>
+                <ProtectedRoute>
                 <DoctorRegister/>
-                </ProtectedRouteAdmin>
+                </ProtectedRoute>
               }
             />
 
@@ -125,6 +125,10 @@ function App() {
           </Route>
           <Route path="/forgotPassword" element={<ForgotPassword />} />
           <Route path="/resetPassword" element={<ResetPassword />} />
+
+
+
+
 
           <Route path="/signIn" element={<SignIn />} />
         </Routes>

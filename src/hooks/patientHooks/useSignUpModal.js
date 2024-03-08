@@ -38,7 +38,7 @@ export default function useSignUpModal() {
           position: "top-right",
         });
         formik.resetForm();
-
+        onClose();
         setIsLoading(false);
       },
       onError: (error) => {

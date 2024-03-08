@@ -132,7 +132,7 @@ const SidebarContent = ({ userName, role, ...props }) => (
       color="gray.600"
       aria-label="Main Navigation"
     >
-      <NavItem icon={AiOutlineHome}>Dashboard</NavItem>
+      {/* <NavItem icon={AiOutlineHome}>Dashboard</NavItem> */}
 
       <NavLink to="/team">
         <NavItem>

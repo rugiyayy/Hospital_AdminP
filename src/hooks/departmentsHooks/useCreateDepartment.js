@@ -38,6 +38,7 @@ export default function useCreateDepartment() {
           position: "top-right",
         });
         formik.resetForm();
+        onClose();
 
         setIsLoading(false);
       },

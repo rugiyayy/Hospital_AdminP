@@ -38,7 +38,7 @@ export default function useCreateDoctorType() {
           position: "top-right",
         });
         formik.resetForm();
-
+        onClose();
         setIsLoading(false);
       },
       onError: (error) => {
@@ -105,6 +105,7 @@ export default function useCreateDoctorType() {
     };
     setIsLoading(true);
     createTypeDoctor.mutate(formData);
+
   };
 
   useEffect(() => {

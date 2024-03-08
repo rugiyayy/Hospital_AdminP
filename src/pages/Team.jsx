@@ -132,9 +132,9 @@ export default function Team() {
         >
           <VStack>
             <Text as="span">Team</Text>
-            <Link to="/register">
+            {role==="Admin" &&(<Link to="/register">
               <Text color="green">Add user</Text>
-            </Link>
+            </Link>)}
           </VStack>
         </Heading>
 
